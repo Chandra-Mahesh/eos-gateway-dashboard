@@ -1,0 +1,881 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Flight Delay EOS Notification System</title>
+<style>
+:root {
+  --bg: #f0f2ff;
+  --card-bg: #ffffff;
+  --text: #1a1a2e;
+  --text-secondary: #555;
+  --border: #d0d5e8;
+  --accent: #6366f1;
+  --accent2: #8b5cf6;
+  --accent3: #ec4899;
+  --gradient: linear-gradient(135deg, #6366f1, #8b5cf6, #ec4899);
+  --gradient2: linear-gradient(135deg, #3b82f6, #6366f1);
+  --table-header: linear-gradient(135deg, #1e1b4b, #312e81);
+  --row-hover: #f5f3ff;
+  --input-bg: #fafafe;
+  --input-border: #d0d5e8;
+  --badge-bg: #ede9fe;
+  --badge-text: #6366f1;
+  --shadow: 0 4px 24px rgba(99, 102, 241, 0.08);
+  --tab-inactive: #e8e5f5;
+  --gateway-bg: #f0f4ff;
+  --toggle-bg: #e2e8f0;
+}
+
+body.dark {
+  --bg: #0f0f1a;
+  --card-bg: #1a1a2e;
+  --text: #e8e8f0;
+  --text-secondary: #a0a0b8;
+  --border: #2d2d4a;
+  --accent: #818cf8;
+  --accent2: #a78bfa;
+  --accent3: #f472b6;
+  --gradient: linear-gradient(135deg, #818cf8, #a78bfa, #f472b6);
+  --gradient2: linear-gradient(135deg, #60a5fa, #818cf8);
+  --table-header: linear-gradient(135deg, #1e1b4b, #312e81);
+  --row-hover: #252545;
+  --input-bg: #12121f;
+  --input-border: #3d3d5c;
+  --badge-bg: #2d2b55;
+  --badge-text: #a78bfa;
+  --shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+  --tab-inactive: #1e1e35;
+  --gateway-bg: #1e1b4b;
+  --toggle-bg: #4a4a6a;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  font-family: system-ui, -apple-system, sans-serif;
+  margin: 0;
+  padding: 20px;
+  color: var(--text);
+  line-height: 1.5;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* Theme Toggle */
+.theme-toggle-wrapper {
+  position: fixed;
+  top: 16px;
+  right: 20px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.theme-toggle-wrapper span {
+  font-size: 18px;
+}
+
+.toggle-track {
+  width: 52px;
+  height: 28px;
+  background: var(--toggle-bg);
+  border-radius: 14px;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  border: 2px solid var(--border);
+}
+
+.toggle-track::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  background: var(--accent);
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+}
+
+.toggle-track.active::after {
+  transform: translateX(24px);
+}
+
+/* Header */
+.header {
+  text-align: center;
+  margin-bottom: 32px;
+  padding: 24px;
+  background: var(--gradient);
+  border-radius: 16px;
+  color: #fff;
+  box-shadow: 0 8px 32px rgba(99, 102, 241, 0.2);
+}
+
+.header h1 {
+  font-size: 26px;
+  margin: 0 0 6px 0;
+}
+
+.header p {
+  margin: 0;
+  opacity: 0.9;
+  font-size: 14px;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin-bottom: 0;
+}
+
+.tab-label {
+  padding: 12px 28px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  border-bottom: none;
+  background: var(--tab-inactive);
+  color: var(--text-secondary);
+  border-radius: 12px 12px 0 0;
+  transition: all 0.2s ease;
+}
+
+.tab-label:hover {
+  background: var(--card-bg);
+  color: var(--accent);
+}
+
+.tab-label.active {
+  background: var(--card-bg);
+  color: var(--accent);
+  font-weight: 600;
+  border-color: var(--accent);
+  border-bottom-color: var(--card-bg);
+}
+
+.tab-content {
+  display: none;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 0 12px 12px 12px;
+  padding: 28px;
+  box-shadow: var(--shadow);
+  transition: background 0.3s ease;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* Section titles */
+.section-title {
+  font-size: 17px;
+  font-weight: 700;
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 6px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--accent);
+}
+
+.section-desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+}
+
+/* Gateway selector */
+.gateway-selector {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding: 14px 18px;
+  background: var(--gateway-bg);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+.gateway-selector label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.gateway-selector select {
+  padding: 8px 12px;
+  border: 1px solid var(--input-border);
+  border-radius: 8px;
+  font-size: 13px;
+  background: var(--input-bg);
+  color: var(--text);
+  min-width: 120px;
+}
+
+.gateway-selector select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+.info-badge {
+  display: inline-block;
+  background: var(--badge-bg);
+  color: var(--badge-text);
+  font-size: 11px;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+/* Spreadsheet */
+.spreadsheet-wrapper {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+}
+
+.spreadsheet {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  min-width: 950px;
+}
+
+.spreadsheet thead th {
+  background: var(--table-header);
+  color: #fff;
+  font-weight: 500;
+  padding: 12px 8px;
+  text-align: center;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.spreadsheet thead th:first-child { border-radius: 11px 0 0 0; }
+.spreadsheet thead th:last-child { border-radius: 0 11px 0 0; }
+
+.spreadsheet tbody td {
+  padding: 0;
+  border: 1px solid var(--border);
+  vertical-align: top;
+}
+
+.spreadsheet tbody td.row-num-cell {
+  text-align: center;
+  font-size: 11px;
+  color: var(--accent);
+  font-weight: 700;
+  background: var(--gateway-bg);
+  padding: 12px 4px;
+  width: 36px;
+}
+
+.spreadsheet tbody td input,
+.spreadsheet tbody td select,
+.spreadsheet tbody td textarea {
+  width: 100%;
+  border: none;
+  padding: 11px 8px;
+  font-size: 13px;
+  font-family: system-ui, sans-serif;
+  background: transparent;
+  color: var(--text);
+  box-sizing: border-box;
+  min-height: 40px;
+}
+
+.spreadsheet tbody td textarea {
+  resize: vertical;
+  min-height: 40px;
+  height: 40px;
+}
+
+.spreadsheet tbody td input:focus,
+.spreadsheet tbody td select:focus,
+.spreadsheet tbody td textarea:focus {
+  outline: none;
+  background: var(--badge-bg);
+}
+
+.spreadsheet tbody tr:hover td {
+  background: var(--row-hover);
+}
+
+.spreadsheet tbody tr:hover td.row-num-cell {
+  background: var(--badge-bg);
+}
+
+/* Buttons */
+.btn-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.btn-eos {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 32px;
+  background: var(--gradient);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
+}
+
+.btn-eos:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(99, 102, 241, 0.4);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 11px 22px;
+  background: var(--card-bg);
+  color: var(--accent);
+  border: 2px solid var(--accent);
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-secondary:hover {
+  background: var(--badge-bg);
+}
+
+.btn-clear {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 11px 22px;
+  background: var(--card-bg);
+  color: #ef4444;
+  border: 2px solid #ef4444;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-clear:hover {
+  background: #fef2f2;
+}
+
+.helper-text {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 14px;
+}
+
+/* EOS Report Page */
+.eos-view {
+  display: none;
+}
+
+.eos-report {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 32px;
+  box-shadow: var(--shadow);
+  margin-top: 20px;
+}
+
+.eos-header {
+  margin-bottom: 24px;
+  padding: 20px 24px;
+  background: var(--gateway-bg);
+  border-radius: 10px;
+  border-left: 4px solid var(--accent);
+}
+
+.eos-header p {
+  margin: 6px 0;
+  font-size: 14px;
+  color: var(--text);
+}
+
+.eos-header .greeting {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+
+.eos-header a {
+  color: var(--accent2);
+  text-decoration: underline;
+}
+
+.eos-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.eos-table thead th {
+  background: var(--table-header);
+  color: #fff;
+  font-weight: 500;
+  padding: 12px 10px;
+  text-align: center;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.eos-table tbody td {
+  padding: 10px 10px;
+  border: 1px solid var(--border);
+  text-align: center;
+  color: var(--text);
+}
+
+.eos-table tbody tr:nth-child(even) td {
+  background: var(--row-hover);
+}
+
+.eos-table tbody tr:hover td {
+  background: var(--badge-bg);
+}
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  background: var(--gradient2);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
+.flight-icon {
+  display: inline-block;
+  font-size: 20px;
+  animation: flyPlane 1.5s ease-in-out infinite;
+}
+
+@keyframes flyPlane {
+  0%, 100% { transform: translateX(0) translateY(0); }
+  50% { transform: translateX(4px) translateY(-3px); }
+}
+
+/* Gateway Directory */
+.gateway-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.gateway-table th {
+  text-align: left;
+  color: #fff;
+  background: var(--table-header);
+  font-weight: 500;
+  padding: 12px 14px;
+}
+
+.gateway-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+  color: var(--text);
+}
+
+.gateway-table tr:hover td {
+  background: var(--row-hover);
+}
+
+.gateway-code {
+  font-family: monospace;
+  font-weight: 700;
+  color: var(--accent);
+  font-size: 13px;
+}
+
+.email-list {
+  word-break: break-all;
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.search-box {
+  width: 100%;
+  padding: 12px 14px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  font-size: 14px;
+  margin-bottom: 16px;
+  background: var(--input-bg);
+  color: var(--text);
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
+}
+
+.search-box:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.status-delayed { color: #f59e0b; font-weight: 600; }
+.status-cancelled { color: #ef4444; font-weight: 600; }
+.status-rescheduled { color: #8b5cf6; font-weight: 600; }
+.status-resolved { color: #10b981; font-weight: 600; }
+.status-pending { color: #6366f1; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<!-- Theme Toggle -->
+<div class="theme-toggle-wrapper">
+  <span>☀️</span>
+  <div class="toggle-track" id="themeToggle" onclick="toggleTheme()"></div>
+  <span>🌙</span>
+</div>
+
+<!-- Header -->
+<div class="header">
+  <h1>✈️ Flight Delay EOS Notification System</h1>
+  <p>Enter multiple flight records and send EOS delay reports to gateway sites</p>
+</div>
+
+<!-- Tabs -->
+<div class="tabs">
+  <div class="tab-label active" onclick="switchTab(0)">📧 Send Email Notification</div>
+  <div class="tab-label" onclick="switchTab(1)">📋 Gateway Email Directory</div>
+</div>
+
+<!-- Tab 1: Send Email -->
+<div class="tab-content active" id="tab-email">
+  <div id="mainView">
+    <div class="section-title">Flight Delay Data Entry</div>
+    <p class="section-desc">Enter multiple flight records below. Each row represents one flight entry. Fill in as many rows as needed.</p>
+
+    <div class="gateway-selector">
+      <label>📍 Send To Gateway:</label>
+      <select id="gatewaySelect">
+        <option value="">Select gateway</option>
+        <option value="KABE">KABE</option>
+        <option value="KAFW">KAFW</option>
+        <option value="KATL">KATL</option>
+        <option value="KAUS">KAUS</option>
+        <option value="KBDL">KBDL</option>
+        <option value="KBNA">KBNA</option>
+        <option value="KBWI">KBWI</option>
+        <option value="KCA1">KCA1</option>
+        <option value="KCLT">KCLT</option>
+        <option value="KCVG">KCVG</option>
+        <option value="KDEN">KDEN</option>
+        <option value="KDFW">KDFW</option>
+        <option value="KIAH">KIAH</option>
+        <option value="KILN">KILN</option>
+        <option value="KJFK">KJFK</option>
+        <option value="KLAL">KLAL</option>
+        <option value="KLAX">KLAX</option>
+        <option value="KMIA">KMIA</option>
+        <option value="KMSP">KMSP</option>
+        <option value="KMSY">KMSY</option>
+        <option value="KONT">KONT</option>
+        <option value="KORD">KORD</option>
+        <option value="KPDX">KPDX</option>
+        <option value="KPHX">KPHX</option>
+        <option value="KRFD">KRFD</option>
+        <option value="KRIC">KRIC</option>
+        <option value="KRIV">KRIV</option>
+        <option value="KSBD">KSBD</option>
+        <option value="KSCK">KSCK</option>
+        <option value="KSEA">KSEA</option>
+        <option value="KSFO">KSFO</option>
+        <option value="KSKF">KSKF</option>
+        <option value="KSMF">KSMF</option>
+        <option value="KSTL">KSTL</option>
+        <option value="KTPA">KTPA</option>
+        <option value="PHNL">PHNL</option>
+      </select>
+      <span class="info-badge">✨ Emails auto-populated from directory</span>
+    </div>
+
+    <div class="spreadsheet-wrapper">
+      <table class="spreadsheet" id="dataTable">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Flight</th>
+            <th>Flight VRID</th>
+            <th>Lane</th>
+            <th>Delay (min)</th>
+            <th>Impacted VRIDs</th>
+            <th>Case</th>
+            <th>Rescheduled VRID</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+        </tbody>
+      </table>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-eos" onclick="sendEOS()">
+        <span class="flight-icon">🛫</span> Send EOS Email
+      </button>
+      <button class="btn-secondary" onclick="addRows(5)">➕ Add More Rows</button>
+      <button class="btn-clear" onclick="clearAll()">🗑️ Clear All</button>
+    </div>
+    <p class="helper-text">💡 Tip: Use the "Impacted VRIDs" column to enter comma-separated lists of multiple VRIDs per flight.</p>
+  </div>
+
+  <div id="eosView" class="eos-view">
+    <button class="back-btn" onclick="goBack()">← Back to Data Entry</button>
+
+    <div class="eos-report">
+      <div class="section-title">📄 EOS Flight Delay Report</div>
+
+      <div class="eos-header">
+        <p class="greeting">Hello Team,</p>
+        <p>Please find below <strong>EOS Flight Delay Report</strong> for Shift - #_ :</p>
+        <p>📌 <strong>Priority Queue Link</strong> (EOS Backlog: #)</p>
+        <p>🔗 <a href="#">Link for the Queue to track all Air Shuttle cases</a></p>
+        <p>📊 <strong>FT- Share Point Tracker:</strong> <a href="#">Link</a></p>
+      </div>
+
+      <table class="eos-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Flight</th>
+            <th>Flight VRID</th>
+            <th>Lane</th>
+            <th>Delay (min)</th>
+            <th>Impacted VRIDs</th>
+            <th>Case</th>
+            <th>Rescheduled VRID</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="eosTableBody">
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Tab 2: Gateway Directory -->
+<div class="tab-content" id="tab-gateway">
+  <div class="section-title">Gateway Email Directory</div>
+  <input type="text" class="search-box" id="searchBox" placeholder="🔍 Search gateway code..." oninput="filterGateways()">
+  <table class="gateway-table" id="gatewayTable">
+    <thead>
+      <tr>
+        <th>Gateway</th>
+        <th>Email Listings</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td class="gateway-code">KABE</td><td class="email-list">abeamazon@pinnaclelogistics.com; kabe-amazon-air-alert@amazon.com</td></tr>
+      <tr><td class="gateway-code">KAFW</td><td class="email-list">kafw-boss@amazon.com; kafw-dock@amazon.com; kafw-leadership@amazon.com; kafw-ops@amazon.com; tom-kafw@amazon.com</td></tr>
+      <tr><td class="gateway-code">KATL</td><td class="email-list">katl-amazon-air-alert@amazon.com; atl.amz-ops@swissport.com</td></tr>
+      <tr><td class="gateway-code">KAUS</td><td class="email-list">ggatlin@pinnaclelogistics.com; ausadmin@pinnaclelogistics.com; auscontrol@wfs.aero</td></tr>
+      <tr><td class="gateway-code">KBDL</td><td class="email-list">kmcintosh@pinnaclelogistics.com; bdlamazon@pinnaclelogistics.com; kbdl-amazon-air-alert@amazon.com</td></tr>
+      <tr><td class="gateway-code">KBNA</td><td class="email-list">azaleah.davis@lgstx.com; william.ferguson@lgstx.com; deanna.billingsley@lgstx.com; denise.sierra@lgstx.com; evan.hailey@lgstx.com; rumaan.aden@lgstx.com; bnanashvillea@gmail.com; candice.gilchrist@lgstx.com; shawn.dunning@lgstx.com; russell.roberts@lgstx.com; rahma.aden@lgstx.com; mario.cespedes@lgstx.com; jose.fernandez@lgstx.com; jim.pradetto@lgstx.com; ikhlas.haji@lgstx.com; gregory.vazquezortiz@lgstx.com; chauffrey.tisdale@lgstx.com; chaniyah.tisdale@lgstx.com; carmen.fernandez@lgstx.com; carlos.lopez@lgstx.com</td></tr>
+      <tr><td class="gateway-code">KBWI</td><td class="email-list">BWIAmazon@pinnaclelogistics.com; bwimod@pinnaclelogistics.com; kbwi-boss@amazon.com; kbwi-ops@amazon.com; kbwi-leadership@amazon.com; kbwi-opsmgr@amazon.com; tom-kbwi@amazon.com</td></tr>
+      <tr><td class="gateway-code">KCA1</td><td class="email-list">melissa.pacheco@ctdi.com; kazmen@amazon.com; lpanduro@ctdi.com; mtarango@ctdi.com; seberwein@ctdi.com</td></tr>
+      <tr><td class="gateway-code">KCLT</td><td class="email-list">amzn.clt@airborneglobal.com; kclt-amazon-air-alert@amazon.com</td></tr>
+      <tr><td class="gateway-code">KCVG</td><td class="email-list">kcvg-amazon-air-alert@amazon.com; kcvg-leadership@amazon.com; kcvg-logistics@amazon.com; kcvg-boss@amazon.com; kcvg-ops@amazon.com</td></tr>
+      <tr><td class="gateway-code">KDEN</td><td class="email-list">brittany.sanchez@swissport.com; kden-amazon-air-alert@amazon.com</td></tr>
+      <tr><td class="gateway-code">KDFW</td><td class="email-list">aamzn.dfw@airborneglobal.com; DFWamazon@pinnaclelogistics.com; kdfw-amazon-air-alert@amazon.com</td></tr>
+      <tr><td class="gateway-code">KIAH</td><td class="email-list">iahops@primeflight.com; kiah-amazon-air-alert@amazon.com</td></tr>
+      <tr><td class="gateway-code">KILN</td><td class="email-list">tom-kiln@amazon.com; kiln-boss@amazon.com; kiln-leadership@amazon.com; kiln-ob-dock@amazon.com; kiln-ops@amazon.com; kiln-sort-mgrs@amazon.com; tom-kiln-leads@amazon.com</td></tr>
+      <tr><td class="gateway-code">KJFK</td><td class="email-list">kjfk-amazon-air-alert@amazon.com</td></tr>
+      <tr><td class="gateway-code">KLAL</td><td class="email-list">klal-leadership@amazon.com; klal-boss@amazon.com; klal-ops@amazon.com; klal-sort-managers@amazon.com; klal-shipdock@amazon.com; tom-associates-klal@amazon.com; tom-klal@amazon.com; tom-leads-klal@amazon.com</td></tr>
+      <tr><td class="gateway-code">KLAX</td><td class="email-list">Laxamz@wfs.aero; Vivian.Ortiz@wfs.aero; Avalle@wfs.aero</td></tr>
+      <tr><td class="gateway-code">KMIA</td><td class="email-list">miaamazon@stratair.net; kmia-amazon-air-alert@amazon.com</td></tr>
+      <tr><td class="gateway-code">KMSP</td><td class="email-list">MSPamazon@pinnaclelogistics.com; kmsp-amazon-air-alert@amazon.com</td></tr>
+      <tr><td class="gateway-code">KMSY</td><td class="email-list">msyops@wfs.aero</td></tr>
+      <tr><td class="gateway-code">KONT</td><td class="email-list">amzn.ont@airborneglobal.com; MTSONT@primeflight.com; kont-amazon-air-alert@amazon.com</td></tr>
+      <tr><td class="gateway-code">KORD</td><td class="email-list">kord-amazon-air-alert@amazon.com</td></tr>
+      <tr><td class="gateway-code">KPDX</td><td class="email-list">mtspdx@primeflight.com; kpdxops@majesticterminalservices.com; kpdx-amazon-air-alert@amazon.com</td></tr>
+      <tr><td class="gateway-code">KPHX</td><td class="email-list">amzn.phx@airborneglobal.com; PHXaerosmith@casusa.com; kphx-amazon-air-alert@amazon.com</td></tr>
+      <tr><td class="gateway-code">KRFD</td><td class="email-list">amzn.rfd@airborneglobal.com; RFDamazon@pinnaclelogistics.com; krfd-manager@amazon.com; tom-krfd@amazon.com; tom-krfd-leads@amazon.com; krfd-amazon-air-alert@amazon.com; krfd-boss@amazon.com; krfd-leadership@amazon.com; krfd-ops-mgrs@amazon.com</td></tr>
+      <tr><td class="gateway-code">KRIC</td><td class="email-list">jacqueline.kendall@majesticterminalservices.com; brandon.rubio@majesticterminalservices.com</td></tr>
+      <tr><td class="gateway-code">KRIV</td><td class="email-list">kriv-boss@amazon.com; kriv-leadership@amazon.com; kriv-ops@amazon.com; kriv-ob-dock@amazon.com; tom-kriv@amazon.com; kriv-casemanagement@amazon.com; kriv-am@amazon.com; kriv-ib-dock@amazon.com; tom-kriv-leads@amazon.com; tom-kriv-specialist@amazon.com</td></tr>
+      <tr><td class="gateway-code">KSBD</td><td class="email-list">ksbd-escalations@amazon.com; ksbd-leadership@amazon.com</td></tr>
+      <tr><td class="gateway-code">KSCK</td><td class="email-list">amzn.sck@airborneglobal.com; SCKAmazon@casusa.com; ksck-amazon-air-alert@amazon.com</td></tr>
+      <tr><td class="gateway-code">KSEA</td><td class="email-list">amzn.sea@airborneglobal.com; ksea-amazon-air-alert@amazon.com</td></tr>
+      <tr><td class="gateway-code">KSFO</td><td class="email-list">ksfo-amazon-air-alert@amazon.com</td></tr>
+      <tr><td class="gateway-code">KSKF</td><td class="email-list">amzn.skf@airborneglobal.com; kskf-amazon-air-alert@amazon.com</td></tr>
+      <tr><td class="gateway-code">KSMF</td><td class="email-list">SMFAmazon@wfs.aero; ksmf-amazon-air-alert@amazon.com</td></tr>
+      <tr><td class="gateway-code">KSTL</td><td class="email-list">mts.stl@majesticterminalservices.com; kstl-amazon-air-alert@amazon.com</td></tr>
+      <tr><td class="gateway-code">KTPA</td><td class="email-list">tpamgt@abxair.com; tpa-admin@abxair.com; ktpa-amazon-air-alert@amazon.com; Hoss.Marting@lgstx.com</td></tr>
+      <tr><td class="gateway-code">PHNL</td><td class="email-list">amazonops@pacificaircargo.com</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<script>
+  // Initialize table rows
+  function createRow(num) {
+    return `<tr>
+      <td class="row-num-cell">${num}</td>
+      <td><input type="text" placeholder="Flight #"></td>
+      <td><input type="text" placeholder="VRID"></td>
+      <td><input type="text" placeholder="Origin-Dest"></td>
+      <td><input type="number" placeholder="0" min="0"></td>
+      <td><textarea placeholder="VRID-1, VRID-2..."></textarea></td>
+      <td><input type="text" placeholder="Case #"></td>
+      <td><input type="text" placeholder="VRID"></td>
+      <td><select><option value="">--</option><option>Delayed</option><option>Cancelled</option><option>Rescheduled</option><option>Resolved</option><option>Pending</option></select></td>
+    </tr>`;
+  }
+
+  function initTable() {
+    let html = '';
+    for (let i = 1; i <= 10; i++) {
+      html += createRow(i);
+    }
+    document.getElementById('tableBody').innerHTML = html;
+  }
+
+  initTable();
+
+  // Theme toggle
+  function toggleTheme() {
+    document.body.classList.toggle('dark');
+    document.getElementById('themeToggle').classList.toggle('active');
+  }
+
+  // Tab switching
+  function switchTab(index) {
+    const tabs = document.querySelectorAll('.tab-label');
+    const contents = document.querySelectorAll('.tab-content');
+    tabs.forEach(t => t.classList.remove('active'));
+    contents.forEach(c => c.classList.remove('active'));
+    tabs[index].classList.add('active');
+    contents[index].classList.add('active');
+  }
+
+  // Add rows
+  function addRows(count) {
+    const tbody = document.getElementById('tableBody');
+    const currentRows = tbody.querySelectorAll('tr').length;
+    let html = '';
+    for (let i = 1; i <= count; i++) {
+      html += createRow(currentRows + i);
+    }
+    tbody.insertAdjacentHTML('beforeend', html);
+  }
+
+  // Clear all
+  function clearAll() {
+    if (confirm('Are you sure you want to clear all entries?')) {
+      initTable();
+    }
+  }
+
+  // Send EOS Email
+  function sendEOS() {
+    const rows = document.querySelectorAll('#tableBody tr');
+    let eosHtml = '';
+    let count = 0;
+
+    rows.forEach((row) => {
+      const cells = row.querySelectorAll('input, textarea, select');
+      const flight = cells[0].value;
+      const vrid = cells[1].value;
+      const lane = cells[2].value;
+      const delay = cells[3].value;
+      const impacted = cells[4].value;
+      const caseNum = cells[5].value;
+      const rescheduled = cells[6].value;
+      const status = cells[7].value;
+
+      if (flight || vrid || lane || delay || caseNum) {
+        count++;
+        let statusClass = '';
+        if (status) statusClass = 'status-' + status.toLowerCase();
+        eosHtml += `<tr>
+          <td>${count}</td>
+          <td>${flight}</td>
+          <td>${vrid}</td>
+          <td>${lane}</td>
+          <td>${delay}</td>
+          <td>${impacted}</td>
+          <td>${caseNum}</td>
+          <td>${rescheduled}</td>
+          <td class="${statusClass}">${status}</td>
+        </tr>`;
+      }
+    });
+
+    if (count === 0) {
+      alert('Please enter at least one flight record before sending.');
+      return;
+    }
+
+    document.getElementById('eosTableBody').innerHTML = eosHtml;
+    document.getElementById('mainView').style.display = 'none';
+    document.getElementById('eosView').style.display = 'block';
+    document.getElementById('eosView').classList.add('active');
+  }
+
+  // Go back
+  function goBack() {
+    document.getElementById('mainView').style.display = 'block';
+    document.getElementById('eosView').style.display = 'none';
+  }
+
+  // Filter gateways
+  function filterGateways() {
+    const query = document.getElementById('searchBox').value.toLowerCase();
+    const rows = document.querySelectorAll('#gatewayTable tbody tr');
+    rows.forEach(row => {
+      const code = row.querySelector('.gateway-code').textContent.toLowerCase();
+      row.style.display = code.includes(query) ? '' : 'none';
+    });
+  }
+</script>
+
+</body>
+</html>
+
