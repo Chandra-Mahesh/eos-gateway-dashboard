@@ -54,7 +54,6 @@ body.dark {
 }
 
 *{box-sizing:border-box}
-
 body{background:var(--bg);font-family:system-ui,-apple-system,sans-serif;margin:0;padding:20px;color:var(--text);line-height:1.5;transition:background .3s,color .3s}
 
 .theme-toggle{position:fixed;top:16px;right:20px;z-index:100;display:flex;align-items:center;gap:8px}
@@ -90,17 +89,15 @@ body{background:var(--bg);font-family:system-ui,-apple-system,sans-serif;margin:
 .email-display.show{display:block}
 
 .spreadsheet-wrapper{overflow-x:auto;border:1px solid var(--border);border-radius:12px;margin-bottom:20px;box-shadow:var(--shadow)}
-.spreadsheet{width:100%;border-collapse:collapse;font-size:13px;min-width:950px}
+.spreadsheet{width:100%;border-collapse:collapse;font-size:13px;min-width:900px}
 .spreadsheet thead th{background:var(--table-header);color:#fff;font-weight:500;padding:12px 8px;text-align:center;font-size:11px;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap}
 .spreadsheet thead th:first-child{border-radius:11px 0 0 0}
 .spreadsheet thead th:last-child{border-radius:0 11px 0 0}
 .spreadsheet tbody td{padding:0;border:1px solid var(--border);vertical-align:top}
-.spreadsheet tbody td.row-num{text-align:center;font-size:11px;color:var(--accent);font-weight:700;background:var(--gateway-bg);padding:12px 4px;width:36px}
-.spreadsheet tbody td input,.spreadsheet tbody td select,.spreadsheet tbody td textarea{width:100%;border:none;padding:11px 8px;font-size:13px;font-family:system-ui,sans-serif;background:transparent;color:var(--text);box-sizing:border-box;min-height:40px}
+.spreadsheet tbody td input,.spreadsheet tbody td textarea{width:100%;border:none;padding:11px 8px;font-size:13px;font-family:system-ui,sans-serif;background:transparent;color:var(--text);box-sizing:border-box;min-height:40px}
 .spreadsheet tbody td textarea{resize:vertical;min-height:40px;height:40px}
-.spreadsheet tbody td input:focus,.spreadsheet tbody td select:focus,.spreadsheet tbody td textarea:focus{outline:none;background:var(--badge-bg)}
+.spreadsheet tbody td input:focus,.spreadsheet tbody td textarea:focus{outline:none;background:var(--badge-bg)}
 .spreadsheet tbody tr:hover td{background:var(--row-hover)}
-.spreadsheet tbody tr:hover td.row-num{background:var(--badge-bg)}
 
 .btn-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
 .btn-eos{display:inline-flex;align-items:center;gap:8px;padding:14px 32px;background:var(--gradient);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;transition:transform .15s,box-shadow .15s;box-shadow:0 4px 16px rgba(99,102,241,.3)}
@@ -119,6 +116,9 @@ body{background:var(--bg);font-family:system-ui,-apple-system,sans-serif;margin:
 .btn-copy:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(16,185,129,.4)}
 .btn-copy.copied{background:linear-gradient(135deg,#6366f1,#8b5cf6)}
 
+.btn-outlook{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;background:linear-gradient(135deg,#0078d4,#106ebe);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;transition:transform .15s,box-shadow .15s;box-shadow:0 4px 16px rgba(0,120,212,.3)}
+.btn-outlook:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(0,120,212,.4)}
+
 .copyable-block{border:2px dashed var(--accent);border-radius:12px;padding:24px;background:var(--input-bg)}
 .copyable-block p{margin:8px 0;font-size:14px;color:var(--text)}
 .copyable-block .greeting{font-weight:700;font-size:15px;color:var(--accent);margin-bottom:12px}
@@ -134,6 +134,14 @@ body{background:var(--bg);font-family:system-ui,-apple-system,sans-serif;margin:
 .flight-icon{display:inline-block;font-size:20px;animation:fly 1.5s ease-in-out infinite}
 @keyframes fly{0%,100%{transform:translateX(0) translateY(0)}50%{transform:translateX(4px) translateY(-3px)}}
 
+/* Airplane animation overlay */
+.plane-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,15,26,0.85);z-index:9999;display:none;justify-content:center;align-items:center;flex-direction:column}
+.plane-overlay.active{display:flex}
+.plane-anim{font-size:80px;animation:takeoff 1.5s ease-in-out forwards}
+.plane-text{color:#fff;font-size:18px;font-weight:600;margin-top:20px;opacity:0;animation:fadeText .5s ease-in .8s forwards}
+@keyframes takeoff{0%{transform:translateX(-200px) translateY(100px) rotate(0deg);opacity:0}30%{opacity:1}100%{transform:translateX(200px) translateY(-150px) rotate(-15deg);opacity:0}}
+@keyframes fadeText{0%{opacity:0;transform:translateY(10px)}100%{opacity:1;transform:translateY(0)}}
+
 .gateway-table{width:100%;border-collapse:collapse;font-size:13px;border-radius:10px;overflow:hidden;border:1px solid var(--border)}
 .gateway-table th{text-align:left;color:#fff;background:var(--table-header);font-weight:500;padding:12px 14px}
 .gateway-table td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top;color:var(--text)}
@@ -144,15 +152,17 @@ body{background:var(--bg);font-family:system-ui,-apple-system,sans-serif;margin:
 .search-box{width:100%;padding:12px 14px;border:2px solid var(--border);border-radius:10px;font-size:14px;margin-bottom:16px;background:var(--input-bg);color:var(--text);box-sizing:border-box}
 .search-box:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(99,102,241,.1)}
 
-.status-delayed{color:#f59e0b;font-weight:600}
-.status-cancelled{color:#ef4444;font-weight:600}
-.status-rescheduled{color:#8b5cf6;font-weight:600}
-.status-resolved{color:#10b981;font-weight:600}
-.status-pending{color:#6366f1;font-weight:600}
-.copy-hint{font-size:11px;color:var(--text-secondary);margin-top:8px;font-style:italic}
+.copy-hint{font-size:11px;color:var(--text-secondary);margin-top:12px;font-style:italic}
+.action-bar{display:flex;gap:12px;margin-top:20px;flex-wrap:wrap}
 </style>
 </head>
 <body>
+
+<!-- Airplane animation overlay -->
+<div class="plane-overlay" id="planeOverlay">
+  <div class="plane-anim">✈️</div>
+  <div class="plane-text">Generating EOS Report...</div>
+</div>
 
 <div class="theme-toggle">
   <span>☀️</span>
@@ -170,18 +180,18 @@ body{background:var(--bg);font-family:system-ui,-apple-system,sans-serif;margin:
   <div class="tab-label" onclick="switchTab(1)">📋 Gateway Email Directory</div>
 </div>
 
-<!-- TAB 1: EMAIL -->
+<!-- TAB 1 -->
 <div class="tab-content active" id="tab-email">
   <div id="mainView">
     <div class="section-title">Flight Delay Data Entry</div>
-    <p class="section-desc">Enter multiple flight records below. Select a gateway to see recipients, then send the EOS report.</p>
+    <p class="section-desc">Enter flight records below. Select a gateway to see recipients, then generate the EOS report.</p>
 
     <div class="gateway-selector">
       <label>📍 Send To Gateway:</label>
       <select id="gatewaySelect" onchange="showGatewayEmails()">
         <option value="">Select gateway</option>
       </select>
-      <span class="info-badge">✨ Recipients shown below on selection</span>
+      <span class="info-badge">✨ Recipients shown below</span>
     </div>
 
     <div class="email-display" id="emailDisplay">
@@ -193,7 +203,6 @@ body{background:var(--bg);font-family:system-ui,-apple-system,sans-serif;margin:
       <table class="spreadsheet" id="dataTable">
         <thead>
           <tr>
-            <th>#</th>
             <th>Flight</th>
             <th>Flight VRID</th>
             <th>Lane</th>
@@ -213,7 +222,7 @@ body{background:var(--bg);font-family:system-ui,-apple-system,sans-serif;margin:
       <button class="btn-secondary" onclick="addRows(5)">➕ Add More Rows</button>
       <button class="btn-clear" onclick="clearAll()">🗑️ Clear All</button>
     </div>
-    <p class="helper-text">💡 Use "Impacted VRIDs" column for comma-separated lists. Select a gateway above to see email recipients.</p>
+    <p class="helper-text">💡 Use "Impacted VRIDs" column for comma-separated lists. All columns support paste from external sources.</p>
   </div>
 
   <div id="eosView" class="eos-view">
@@ -221,7 +230,6 @@ body{background:var(--bg);font-family:system-ui,-apple-system,sans-serif;margin:
     <div class="eos-report">
       <div class="copy-bar">
         <div class="section-title">📄 EOS Flight Delay Report</div>
-        <button class="btn-copy" id="copyBtn" onclick="copyReport()">📋 Copy to Clipboard</button>
       </div>
 
       <div class="copyable-block" id="copyableContent">
@@ -234,7 +242,6 @@ body{background:var(--bg);font-family:system-ui,-apple-system,sans-serif;margin:
         <table>
           <thead>
             <tr>
-              <th>#</th>
               <th>Flight</th>
               <th>Flight VRID</th>
               <th>Lane</th>
@@ -248,12 +255,17 @@ body{background:var(--bg);font-family:system-ui,-apple-system,sans-serif;margin:
           <tbody id="eosTableBody"></tbody>
         </table>
       </div>
-      <p class="copy-hint">💡 Click "Copy to Clipboard" to copy the entire report — paste directly into your email.</p>
+
+      <div class="action-bar">
+        <button class="btn-copy" id="copyBtn" onclick="copyReport()">📋 Copy to Clipboard</button>
+        <button class="btn-outlook" onclick="sendToOutlook()">📧 Send via Outlook</button>
+      </div>
+      <p class="copy-hint">💡 "Copy to Clipboard" copies the entire report. "Send via Outlook" opens your email client with the report pre-filled.</p>
     </div>
   </div>
 </div>
 
-<!-- TAB 2: GATEWAY DIRECTORY -->
+<!-- TAB 2 -->
 <div class="tab-content" id="tab-gateway">
   <div class="section-title">Gateway Email Directory</div>
   <input type="text" class="search-box" id="searchBox" placeholder="🔍 Search gateway code..." oninput="filterGateways()">
@@ -264,7 +276,6 @@ body{background:var(--bg);font-family:system-ui,-apple-system,sans-serif;margin:
 </div>
 
 <script>
-// Gateway email data
 const gatewayData = {
   "KABE": "abeamazon@pinnaclelogistics.com; kabe-amazon-air-alert@amazon.com",
   "KAFW": "kafw-boss@amazon.com; kafw-dock@amazon.com; kafw-leadership@amazon.com; kafw-ops@amazon.com; tom-kafw@amazon.com",
@@ -304,115 +315,106 @@ const gatewayData = {
   "PHNL": "amazonops@pacificaircargo.com"
 };
 
-// Initialize gateway dropdown and directory table
 function init() {
   const select = document.getElementById('gatewaySelect');
   const tbody = document.getElementById('gatewayTableBody');
   let selectHtml = '<option value="">Select gateway</option>';
   let tableHtml = '';
-
   Object.keys(gatewayData).sort().forEach(code => {
     selectHtml += `<option value="${code}">${code}</option>`;
     tableHtml += `<tr><td class="gw-code">${code}</td><td class="gw-email">${gatewayData[code]}</td></tr>`;
   });
-
   select.innerHTML = selectHtml;
   tbody.innerHTML = tableHtml;
   initTable();
 }
 
-// Show gateway emails on selection
 function showGatewayEmails() {
-  const select = document.getElementById('gatewaySelect');
+  const val = document.getElementById('gatewaySelect').value;
   const display = document.getElementById('emailDisplay');
-  const emailList = document.getElementById('emailList');
-
-  if (select.value && gatewayData[select.value]) {
-    emailList.textContent = gatewayData[select.value];
+  const list = document.getElementById('emailList');
+  if (val && gatewayData[val]) {
+    list.textContent = gatewayData[val];
     display.classList.add('show');
   } else {
     display.classList.remove('show');
   }
 }
 
-// Table row creation
-function createRow(num) {
+function createRow() {
   return `<tr>
-    <td class="row-num">${num}</td>
     <td><input type="text" placeholder="Flight #"></td>
     <td><input type="text" placeholder="VRID"></td>
     <td><input type="text" placeholder="Origin-Dest"></td>
-    <td><input type="number" placeholder="0" min="0"></td>
+    <td><input type="text" placeholder="0"></td>
     <td><textarea placeholder="VRID-1, VRID-2..."></textarea></td>
     <td><input type="text" placeholder="Case #"></td>
     <td><input type="text" placeholder="VRID"></td>
-    <td><select><option value="">--</option><option>Delayed</option><option>Cancelled</option><option>Rescheduled</option><option>Resolved</option><option>Pending</option></select></td>
+    <td><input type="text" placeholder="Status"></td>
   </tr>`;
 }
 
 function initTable() {
   let html = '';
-  for (let i = 1; i <= 10; i++) html += createRow(i);
+  for (let i = 0; i < 10; i++) html += createRow();
   document.getElementById('tableBody').innerHTML = html;
 }
 
-// Theme toggle
 function toggleTheme() {
   document.body.classList.toggle('dark');
   document.getElementById('themeToggle').classList.toggle('active');
 }
 
-// Tab switching
 function switchTab(index) {
   document.querySelectorAll('.tab-label').forEach((t,i) => t.classList.toggle('active', i===index));
   document.querySelectorAll('.tab-content').forEach((c,i) => c.classList.toggle('active', i===index));
 }
 
-// Add rows
 function addRows(count) {
   const tbody = document.getElementById('tableBody');
-  const current = tbody.querySelectorAll('tr').length;
   let html = '';
-  for (let i = 1; i <= count; i++) html += createRow(current + i);
+  for (let i = 0; i < count; i++) html += createRow();
   tbody.insertAdjacentHTML('beforeend', html);
 }
 
-// Clear all
 function clearAll() {
   if (confirm('Clear all entries?')) initTable();
 }
 
-// Send EOS
 function sendEOS() {
   const rows = document.querySelectorAll('#tableBody tr');
   let eosHtml = '', count = 0;
 
   rows.forEach(row => {
-    const cells = row.querySelectorAll('input, textarea, select');
-    const [flight, vrid, lane, delay, impacted, caseNum, rescheduled, status] = 
-      Array.from(cells).map(c => c.value);
+    const cells = row.querySelectorAll('input, textarea');
+    const [flight, vrid, lane, delay, impacted, caseNum, rescheduled, status] =
+      Array.from(cells).map(c => c.value.trim());
 
     if (flight || vrid || lane || delay || caseNum) {
       count++;
-      const cls = status ? 'status-' + status.toLowerCase() : '';
-      eosHtml += `<tr><td>${count}</td><td>${flight}</td><td>${vrid}</td><td>${lane}</td><td>${delay}</td><td>${impacted}</td><td>${caseNum}</td><td>${rescheduled}</td><td class="${cls}">${status}</td></tr>`;
+      eosHtml += `<tr><td>${flight}</td><td>${vrid}</td><td>${lane}</td><td>${delay}</td><td>${impacted}</td><td>${caseNum}</td><td>${rescheduled}</td><td>${status}</td></tr>`;
     }
   });
 
   if (!count) { alert('Please enter at least one flight record.'); return; }
 
-  document.getElementById('eosTableBody').innerHTML = eosHtml;
-  document.getElementById('mainView').style.display = 'none';
-  document.getElementById('eosView').style.display = 'block';
+  // Show airplane animation
+  const overlay = document.getElementById('planeOverlay');
+  overlay.classList.add('active');
+
+  setTimeout(() => {
+    overlay.classList.remove('active');
+    document.getElementById('eosTableBody').innerHTML = eosHtml;
+    document.getElementById('mainView').style.display = 'none';
+    document.getElementById('eosView').style.display = 'block';
+  }, 1800);
 }
 
-// Go back
 function goBack() {
   document.getElementById('mainView').style.display = 'block';
   document.getElementById('eosView').style.display = 'none';
 }
 
-// Copy report
 function copyReport() {
   const content = document.getElementById('copyableContent');
   const range = document.createRange();
@@ -420,7 +422,6 @@ function copyReport() {
   const sel = window.getSelection();
   sel.removeAllRanges();
   sel.addRange(range);
-
   try {
     document.execCommand('copy');
     const btn = document.getElementById('copyBtn');
@@ -431,7 +432,35 @@ function copyReport() {
   sel.removeAllRanges();
 }
 
-// Filter gateways
+function sendToOutlook() {
+  const gateway = document.getElementById('gatewaySelect').value;
+  const emails = gateway ? gatewayData[gateway].replace(/;\s*/g, ';') : '';
+
+  // Build email body text
+  const rows = document.querySelectorAll('#eosTableBody tr');
+  let body = 'Hello Team,%0D%0A%0D%0A';
+  body += 'Please find below EOS Flight Delay Report for Shift - #_ :%0D%0A%0D%0A';
+  body += 'Priority Queue Link (EOS Backlog): https://paragon-na.amazon.com/hz/dox-search?searchQuery=(queue:%22toc-na-priority-loads@amazon.com%22)%20AND%20(-status:%22RESOLVED%22)%26contentType=CASE%26pageSize=75%26sortField=lastOutboundDate%26sortOrder=asc%0D%0A%0D%0A';
+  body += 'Link for the Queue to track all Air Shuttle cases: https://paragon-na.amazon.com/hz/dox-search?searchQuery=(%22OutboundAirShuttle%22%20OR%20%22OutboundFresh%22%20OR%20%22TransfersFresh%22)%20AND%20-status:%22Resolved%22%20AND%20(queue:%22roc-trailer-team@amazon.com%22%20OR%20queue:%22noc-na-ib-swa@amazon.com%22%20OR%20queue:%22toc-na-support@amazon.com%22%20OR%20queue:%22azng-na-escalations@amazon.com%22%20OR%20queue:%22roc-na-3p-trailer-issues@amazon.com%22)%26contentType=CASE%26pageSize=75%26sortField=creationDate%26sortOrder=desc%0D%0A%0D%0A';
+  body += 'FT- Share Point Tracker: [Link]%0D%0A%0D%0A';
+  body += '--- Flight Delay Details ---%0D%0A%0D%0A';
+  body += 'Flight | Flight VRID | Lane | Delay (min) | Impacted VRIDs | Case | Rescheduled VRID | Status%0D%0A';
+  body += '--------------------------------------------------------------%0D%0A';
+
+  rows.forEach(row => {
+    const cells = row.querySelectorAll('td');
+    const rowData = Array.from(cells).map(c => c.textContent.trim()).join(' | ');
+    body += rowData + '%0D%0A';
+  });
+
+  body += '%0D%0A%0D%0AThank you,%0D%0AEOS Flight Team';
+
+  const subject = 'EOS Flight Delay Report - ' + (gateway || 'All Gateways');
+  const mailto = `mailto:${emails}?subject=${encodeURIComponent(subject)}&body=${body}`;
+
+  window.location.href = mailto;
+}
+
 function filterGateways() {
   const q = document.getElementById('searchBox').value.toLowerCase();
   document.querySelectorAll('#gatewayTable tbody tr').forEach(row => {
@@ -439,7 +468,6 @@ function filterGateways() {
   });
 }
 
-// Initialize
 init();
 </script>
 
