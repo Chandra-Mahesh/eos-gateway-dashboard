@@ -1,3 +1,4 @@
+```python
 ```html
 <!DOCTYPE html>
 <html>
@@ -134,7 +135,6 @@ body{background:var(--bg);font-family:system-ui,-apple-system,sans-serif;margin:
 .flight-icon{display:inline-block;font-size:20px;animation:fly 1.5s ease-in-out infinite}
 @keyframes fly{0%,100%{transform:translateX(0) translateY(0)}50%{transform:translateX(4px) translateY(-3px)}}
 
-/* Airplane animation overlay */
 .plane-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,15,26,0.85);z-index:9999;display:none;justify-content:center;align-items:center;flex-direction:column}
 .plane-overlay.active{display:flex}
 .plane-anim{font-size:80px;animation:takeoff 1.5s ease-in-out forwards}
@@ -158,7 +158,6 @@ body{background:var(--bg);font-family:system-ui,-apple-system,sans-serif;margin:
 </head>
 <body>
 
-<!-- Airplane animation overlay -->
 <div class="plane-overlay" id="planeOverlay">
   <div class="plane-anim">✈️</div>
   <div class="plane-text">Generating EOS Report...</div>
@@ -222,7 +221,7 @@ body{background:var(--bg);font-family:system-ui,-apple-system,sans-serif;margin:
       <button class="btn-secondary" onclick="addRows(5)">➕ Add More Rows</button>
       <button class="btn-clear" onclick="clearAll()">🗑️ Clear All</button>
     </div>
-    <p class="helper-text">💡 Use "Impacted VRIDs" column for comma-separated lists. All columns support paste from external sources.</p>
+    <p class="helper-text">💡 All columns support paste from external sources. Select a gateway above to see email recipients.</p>
   </div>
 
   <div id="eosView" class="eos-view">
@@ -235,7 +234,7 @@ body{background:var(--bg);font-family:system-ui,-apple-system,sans-serif;margin:
       <div class="copyable-block" id="copyableContent">
         <p class="greeting">Hello Team,</p>
         <p>Please find below <strong>EOS Flight Delay Report</strong> for Shift - #_ :</p>
-        <p>📌 <strong>Priority Queue Link</strong> (EOS Backlog: #): <a href="https://paragon-na.amazon.com/hz/dox-search?searchQuery=(queue:%22toc-na-priority-loads@amazon.com%22)%20AND%20(-status:%22RESOLVED%22)&contentType=CASE&pageSize=75&sortField=lastOutboundDate&sortOrder=asc" target="_blank">Click Here</a></p>
+        <p>📌 <strong>Priority Queue Link</strong> (EOS Backlog: #): <a href="https://paragon-na.amazon.com/hz/dox-search?searchQuery=(queue:%22toc-na-priority-loads@amazon.com%22)%20AND%20(-status:%22RESOLVED%22)&contentType=CASE&pageSize=75&sortField=lastOutboundDate&sortOrder=asc" target="_blank">Link</a></p>
         <p>🔗 Link for the Queue to track all Air Shuttle cases: <a href="https://paragon-na.amazon.com/hz/dox-search?searchQuery=(%22OutboundAirShuttle%22%20OR%20%22OutboundFresh%22%20OR%20%22TransfersFresh%22)%20AND%20-status:%22Resolved%22%20AND%20(queue:%22roc-trailer-team@amazon.com%22%20OR%20queue:%22noc-na-ib-swa@amazon.com%22%20OR%20queue:%22toc-na-support@amazon.com%22%20OR%20queue:%22azng-na-escalations@amazon.com%22%20OR%20queue:%22roc-na-3p-trailer-issues@amazon.com%22)%20AND%20creationDate:[%201590476400000%20TO%20*%20]&contentType=CASE&pageSize=75&sortField=creationDate&sortOrder=desc" target="_blank">Link</a></p>
         <p>📊 <strong>FT- Share Point Tracker:</strong> <a href="#">Link</a></p>
 
@@ -260,7 +259,7 @@ body{background:var(--bg);font-family:system-ui,-apple-system,sans-serif;margin:
         <button class="btn-copy" id="copyBtn" onclick="copyReport()">📋 Copy to Clipboard</button>
         <button class="btn-outlook" onclick="sendToOutlook()">📧 Send via Outlook</button>
       </div>
-      <p class="copy-hint">💡 "Copy to Clipboard" copies the entire report. "Send via Outlook" opens your email client with the report pre-filled.</p>
+      <p class="copy-hint">💡 "Copy to Clipboard" copies the entire report. "Send via Outlook" opens your email client with a full HTML table.</p>
     </div>
   </div>
 </div>
@@ -314,6 +313,9 @@ const gatewayData = {
   "KTPA": "tpamgt@abxair.com; tpa-admin@abxair.com; ktpa-amazon-air-alert@amazon.com; Hoss.Marting@lgstx.com",
   "PHNL": "amazonops@pacificaircargo.com"
 };
+
+const PRIORITY_QUEUE_URL = 'https://paragon-na.amazon.com/hz/dox-search?searchQuery=(queue:%22toc-na-priority-loads@amazon.com%22)%20AND%20(-status:%22RESOLVED%22)&contentType=CASE&pageSize=75&sortField=lastOutboundDate&sortOrder=asc';
+const AIR_SHUTTLE_URL = 'https://paragon-na.amazon.com/hz/dox-search?searchQuery=(%22OutboundAirShuttle%22%20OR%20%22OutboundFresh%22%20OR%20%22TransfersFresh%22)%20AND%20-status:%22Resolved%22%20AND%20(queue:%22roc-trailer-team@amazon.com%22%20OR%20queue:%22noc-na-ib-swa@amazon.com%22%20OR%20queue:%22toc-na-support@amazon.com%22%20OR%20queue:%22azng-na-escalations@amazon.com%22%20OR%20queue:%22roc-na-3p-trailer-issues@amazon.com%22)%20AND%20creationDate:[%201590476400000%20TO%20*%20]&contentType=CASE&pageSize=75&sortField=creationDate&sortOrder=desc';
 
 function init() {
   const select = document.getElementById('gatewaySelect');
@@ -381,29 +383,33 @@ function clearAll() {
   if (confirm('Clear all entries?')) initTable();
 }
 
-function sendEOS() {
+function getTableData() {
   const rows = document.querySelectorAll('#tableBody tr');
-  let eosHtml = '', count = 0;
-
+  const data = [];
   rows.forEach(row => {
     const cells = row.querySelectorAll('input, textarea');
     const [flight, vrid, lane, delay, impacted, caseNum, rescheduled, status] =
       Array.from(cells).map(c => c.value.trim());
-
     if (flight || vrid || lane || delay || caseNum) {
-      count++;
-      eosHtml += `<tr><td>${flight}</td><td>${vrid}</td><td>${lane}</td><td>${delay}</td><td>${impacted}</td><td>${caseNum}</td><td>${rescheduled}</td><td>${status}</td></tr>`;
+      data.push({ flight, vrid, lane, delay, impacted, caseNum, rescheduled, status });
     }
   });
+  return data;
+}
 
-  if (!count) { alert('Please enter at least one flight record.'); return; }
+function sendEOS() {
+  const data = getTableData();
+  if (!data.length) { alert('Please enter at least one flight record.'); return; }
 
-  // Show airplane animation
   const overlay = document.getElementById('planeOverlay');
   overlay.classList.add('active');
 
   setTimeout(() => {
     overlay.classList.remove('active');
+    let eosHtml = '';
+    data.forEach(d => {
+      eosHtml += `<tr><td>${d.flight}</td><td>${d.vrid}</td><td>${d.lane}</td><td>${d.delay}</td><td>${d.impacted}</td><td>${d.caseNum}</td><td>${d.rescheduled}</td><td>${d.status}</td></tr>`;
+    });
     document.getElementById('eosTableBody').innerHTML = eosHtml;
     document.getElementById('mainView').style.display = 'none';
     document.getElementById('eosView').style.display = 'block';
@@ -434,31 +440,82 @@ function copyReport() {
 
 function sendToOutlook() {
   const gateway = document.getElementById('gatewaySelect').value;
-  const emails = gateway ? gatewayData[gateway].replace(/;\s*/g, ';') : '';
+  const emails = gateway ? gatewayData[gateway].split(';').map(e => e.trim()).join(';') : '';
+  const data = getTableData();
 
-  // Build email body text
-  const rows = document.querySelectorAll('#eosTableBody tr');
-  let body = 'Hello Team,%0D%0A%0D%0A';
-  body += 'Please find below EOS Flight Delay Report for Shift - #_ :%0D%0A%0D%0A';
-  body += 'Priority Queue Link (EOS Backlog): https://paragon-na.amazon.com/hz/dox-search?searchQuery=(queue:%22toc-na-priority-loads@amazon.com%22)%20AND%20(-status:%22RESOLVED%22)%26contentType=CASE%26pageSize=75%26sortField=lastOutboundDate%26sortOrder=asc%0D%0A%0D%0A';
-  body += 'Link for the Queue to track all Air Shuttle cases: https://paragon-na.amazon.com/hz/dox-search?searchQuery=(%22OutboundAirShuttle%22%20OR%20%22OutboundFresh%22%20OR%20%22TransfersFresh%22)%20AND%20-status:%22Resolved%22%20AND%20(queue:%22roc-trailer-team@amazon.com%22%20OR%20queue:%22noc-na-ib-swa@amazon.com%22%20OR%20queue:%22toc-na-support@amazon.com%22%20OR%20queue:%22azng-na-escalations@amazon.com%22%20OR%20queue:%22roc-na-3p-trailer-issues@amazon.com%22)%26contentType=CASE%26pageSize=75%26sortField=creationDate%26sortOrder=desc%0D%0A%0D%0A';
-  body += 'FT- Share Point Tracker: [Link]%0D%0A%0D%0A';
-  body += '--- Flight Delay Details ---%0D%0A%0D%0A';
-  body += 'Flight | Flight VRID | Lane | Delay (min) | Impacted VRIDs | Case | Rescheduled VRID | Status%0D%0A';
-  body += '--------------------------------------------------------------%0D%0A';
+  // Build HTML email body with proper table borders
+  let htmlBody = `
+<html><body style="font-family:Calibri,Arial,sans-serif;font-size:14px;color:#333;">
+<p><b>Hello Team,</b></p>
+<p>Please find below <b>EOS Flight Delay Report</b> for Shift - #_ :</p>
+<p>📌 <b>Priority Queue Link</b> (EOS Backlog: #): <a href="${PRIORITY_QUEUE_URL}">Link</a></p>
+<p>🔗 Link for the Queue to track all Air Shuttle cases: <a href="${AIR_SHUTTLE_URL}">Link</a></p>
+<p>📊 <b>FT- Share Point Tracker:</b> <a href="#">Link</a></p>
+<br>
+<table border="1" cellpadding="8" cellspacing="0" style="border-collapse:collapse;border:2px solid #333;font-family:Calibri,Arial,sans-serif;font-size:13px;width:100%;">
+<thead>
+<tr style="background-color:#1e1b4b;color:#ffffff;">
+<th style="border:1px solid #333;padding:10px;">Flight</th>
+<th style="border:1px solid #333;padding:10px;">Flight VRID</th>
+<th style="border:1px solid #333;padding:10px;">Lane</th>
+<th style="border:1px solid #333;padding:10px;">Delay (min)</th>
+<th style="border:1px solid #333;padding:10px;">Impacted VRIDs</th>
+<th style="border:1px solid #333;padding:10px;">Case</th>
+<th style="border:1px solid #333;padding:10px;">Rescheduled VRID</th>
+<th style="border:1px solid #333;padding:10px;">Status</th>
+</tr>
+</thead>
+<tbody>`;
 
-  rows.forEach(row => {
-    const cells = row.querySelectorAll('td');
-    const rowData = Array.from(cells).map(c => c.textContent.trim()).join(' | ');
-    body += rowData + '%0D%0A';
+  data.forEach((d, i) => {
+    const bgColor = i % 2 === 0 ? '#ffffff' : '#f3f4f6';
+    htmlBody += `<tr style="background-color:${bgColor};">
+<td style="border:1px solid #333;padding:8px;text-align:center;">${d.flight}</td>
+<td style="border:1px solid #333;padding:8px;text-align:center;">${d.vrid}</td>
+<td style="border:1px solid #333;padding:8px;text-align:center;">${d.lane}</td>
+<td style="border:1px solid #333;padding:8px;text-align:center;">${d.delay}</td>
+<td style="border:1px solid #333;padding:8px;text-align:center;">${d.impacted}</td>
+<td style="border:1px solid #333;padding:8px;text-align:center;">${d.caseNum}</td>
+<td style="border:1px solid #333;padding:8px;text-align:center;">${d.rescheduled}</td>
+<td style="border:1px solid #333;padding:8px;text-align:center;">${d.status}</td>
+</tr>`;
   });
 
-  body += '%0D%0A%0D%0AThank you,%0D%0AEOS Flight Team';
+  htmlBody += `</tbody></table>
+<br>
+<p>Thank you,<br>EOS Flight Team</p>
+</body></html>`;
 
-  const subject = 'EOS Flight Delay Report - ' + (gateway || 'All Gateways');
-  const mailto = `mailto:${emails}?subject=${encodeURIComponent(subject)}&body=${body}`;
+  // Copy HTML to clipboard for pasting into Outlook
+  const blob = new Blob([htmlBody], { type: 'text/html' });
+  const clipboardItem = new ClipboardItem({ 'text/html': blob });
 
-  window.location.href = mailto;
+  navigator.clipboard.write([clipboardItem]).then(() => {
+    // Open mailto with recipients and subject
+    const subject = encodeURIComponent('EOS Flight Delay Report - ' + (gateway || 'All Gateways'));
+    const mailto = `mailto:${emails}?subject=${subject}`;
+    window.location.href = mailto;
+
+    // Show confirmation
+    const btn = document.querySelector('.btn-outlook');
+    btn.innerHTML = '✅ HTML Copied & Outlook Opened!';
+    setTimeout(() => { btn.innerHTML = '📧 Send via Outlook'; }, 3000);
+  }).catch(() => {
+    // Fallback: open mailto with plain text body
+    const subject = encodeURIComponent('EOS Flight Delay Report - ' + (gateway || 'All Gateways'));
+    let body = 'Hello Team,%0D%0A%0D%0A';
+    body += 'Please find below EOS Flight Delay Report for Shift - #_ :%0D%0A%0D%0A';
+    body += 'Priority Queue Link (EOS Backlog): Link%0D%0A';
+    body += 'Link for the Queue to track all Air Shuttle cases: Link%0D%0A';
+    body += 'FT- Share Point Tracker: Link%0D%0A%0D%0A';
+    body += 'Flight | Flight VRID | Lane | Delay | Impacted VRIDs | Case | Rescheduled VRID | Status%0D%0A';
+    body += '---------------------------------------------------------------------------------------------%0D%0A';
+    data.forEach(d => {
+      body += `${d.flight} | ${d.vrid} | ${d.lane} | ${d.delay} | ${d.impacted} | ${d.caseNum} | ${d.rescheduled} | ${d.status}%0D%0A`;
+    });
+    body += '%0D%0AThank you,%0D%0AEOS Flight Team';
+    window.location.href = `mailto:${emails}?subject=${subject}&body=${body}`;
+  });
 }
 
 function filterGateways() {
