@@ -1,4 +1,5 @@
 ```python
+```python
 ```html
 <!DOCTYPE html>
 <html>
@@ -122,7 +123,6 @@ body{background:var(--bg);font-family:system-ui,-apple-system,sans-serif;margin:
 .eos-view{display:none}
 .eos-report{background:var(--card-bg);border:1px solid var(--border);border-radius:12px;padding:32px;box-shadow:var(--shadow);margin-top:20px}
 
-.copy-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:12px}
 .btn-copy{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;transition:transform .15s,box-shadow .15s;box-shadow:0 4px 16px rgba(16,185,129,.3)}
 .btn-copy:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(16,185,129,.4)}
 .btn-copy.copied{background:linear-gradient(135deg,#6366f1,#8b5cf6)}
@@ -180,17 +180,11 @@ body{background:var(--bg);font-family:system-ui,-apple-system,sans-serif;margin:
 <body>
 
 <!-- Overlays -->
-<div class="overlay" id="planeOverlay">
-  <div class="plane-anim">✈️</div>
-  <div class="overlay-text">Generating EOS Report...</div>
-</div>
-<div class="overlay" id="truckOverlay">
-  <div class="truck-anim">🚛</div>
-  <div class="overlay-text">Generating RSR EOS Report...</div>
-</div>
+<div class="overlay" id="planeOverlay"><div class="plane-anim">✈️</div><div class="overlay-text">Generating EOS Report...</div></div>
+<div class="overlay" id="truckOverlay"><div class="truck-anim">🚛</div><div class="overlay-text">Generating RSR EOS Report...</div></div>
 
 <!-- Paste Toast -->
-<div class="paste-toast" id="pasteToast">✅ Data pasted across cells!</div>
+<div class="paste-toast" id="pasteToast"></div>
 
 <div class="theme-toggle">
   <span>☀️</span>
@@ -209,44 +203,34 @@ body{background:var(--bg);font-family:system-ui,-apple-system,sans-serif;margin:
   <div class="tab-label" onclick="switchTab(2)">📋 Gateway Email Directory</div>
 </div>
 
-<!-- TAB 1: FLIGHT EOS -->
+<!-- TAB 1 -->
 <div class="tab-content active" id="tab-email">
   <div id="mainView">
     <div class="section-title">Flight Delay Data Entry</div>
-    <p class="section-desc">Enter flight records below. Select a gateway to see recipients, then generate the EOS report.</p>
-
+    <p class="section-desc">Enter flight records below. Copy rows from Excel/Sheets and paste — data auto-fills across all columns!</p>
     <div class="gateway-selector">
       <label>📍 Send To Gateway:</label>
-      <select id="gatewaySelect" onchange="showGatewayEmails()">
-        <option value="">Select gateway</option>
-      </select>
+      <select id="gatewaySelect" onchange="showGatewayEmails()"><option value="">Select gateway</option></select>
       <span class="info-badge">✨ Recipients shown below</span>
     </div>
-
-    <div class="email-display" id="emailDisplay">
-      <strong>📬 Recipients:</strong>
-      <span id="emailList"></span>
-    </div>
-
+    <div class="email-display" id="emailDisplay"><strong>📬 Recipients:</strong><span id="emailList"></span></div>
     <div class="spreadsheet-wrapper">
       <table class="spreadsheet" id="dataTable">
         <thead><tr><th>Flight</th><th>Flight VRID</th><th>Lane</th><th>Delay (min)</th><th>Impacted VRIDs</th><th>Case</th><th>Rescheduled VRID</th><th>Status</th></tr></thead>
         <tbody id="tableBody"></tbody>
       </table>
     </div>
-
     <div class="btn-row">
       <button class="btn-eos" onclick="sendEOS()"><span class="flight-icon">🛫</span> Send EOS Email</button>
       <button class="btn-secondary" onclick="addRows('tableBody',5,createFlightRow)">➕ Add More Rows</button>
       <button class="btn-clear" onclick="clearTable('tableBody',10,createFlightRow)">🗑️ Clear All</button>
     </div>
-    <p class="helper-text">💡 Copy entire rows from Excel/Sheets and paste — data auto-fills across all columns and rows!</p>
+    <p class="helper-text">💡 Copy from Excel → Click any cell → Ctrl+V. Data fills across all columns & rows automatically!</p>
   </div>
-
   <div id="eosView" class="eos-view">
     <button class="back-btn" onclick="goBack('mainView','eosView')">← Back to Data Entry</button>
     <div class="eos-report">
-      <div class="copy-bar"><div class="section-title">📄 EOS Flight Delay Report</div></div>
+      <div class="section-title">📄 EOS Flight Delay Report</div>
       <div class="copyable-block" id="copyableContent">
         <p class="greeting">Hello Team,</p>
         <p>Please find below <strong>EOS Flight Delay Report</strong> for Shift - #_ :</p>
@@ -264,12 +248,11 @@ body{background:var(--bg);font-family:system-ui,-apple-system,sans-serif;margin:
   </div>
 </div>
 
-<!-- TAB 2: RSR EOS -->
+<!-- TAB 2 -->
 <div class="tab-content" id="tab-rsr">
   <div id="rsrMainView">
     <div class="section-title">🚛 RSR EOS - Shift Summary & TPA Details</div>
-    <p class="section-desc">Enter shift summary data and TPA/FMER details below. Copy from Excel/Sheets and paste — data fills across all cells automatically!</p>
-
+    <p class="section-desc">Enter shift summary and TPA/FMER details. Paste from Excel — data auto-fills across all cells!</p>
     <div class="sub-title">Table 1: Shift Summary</div>
     <div class="spreadsheet-wrapper">
       <table class="summary-table" id="rsrSummaryTable">
@@ -282,7 +265,6 @@ body{background:var(--bg);font-family:system-ui,-apple-system,sans-serif;margin:
         </tbody>
       </table>
     </div>
-
     <div class="sub-title">Table 2: TPA / FMER Details</div>
     <div class="spreadsheet-wrapper">
       <table class="spreadsheet" id="rsrDetailTable" style="min-width:1400px">
@@ -290,33 +272,23 @@ body{background:var(--bg);font-family:system-ui,-apple-system,sans-serif;margin:
         <tbody id="rsrTableBody"></tbody>
       </table>
     </div>
-
     <div class="btn-row">
       <button class="btn-rsr" onclick="sendRSR()"><span class="truck-icon">🚛</span> Send RSR EOS Email</button>
       <button class="btn-secondary" onclick="addRows('rsrTableBody',5,createRSRRow)">➕ Add More Rows</button>
       <button class="btn-clear" onclick="clearTable('rsrTableBody',5,createRSRRow)">🗑️ Clear All</button>
     </div>
-    <p class="helper-text">💡 Paste multiple rows from Excel — data auto-distributes across all columns!</p>
+    <p class="helper-text">💡 Copy from Excel → Click first cell → Ctrl+V. All rows & columns fill automatically!</p>
   </div>
-
   <div id="rsrEosView" class="eos-view">
     <button class="back-btn" onclick="goBack('rsrMainView','rsrEosView')">← Back to Data Entry</button>
     <div class="eos-report">
-      <div class="copy-bar"><div class="section-title">📄 RSR EOS Report</div></div>
+      <div class="section-title">📄 RSR EOS Report</div>
       <div class="copyable-block" id="rsrCopyableContent">
         <p class="greeting">Hello Team,</p>
         <p>Please find below RSR loads tracked in <strong>Shift-#</strong> -</p>
         <p>For extensive summary please refer: <a href="#" target="_blank">RSR Quip Link</a></p>
-
-        <table style="width:auto;min-width:350px">
-          <thead><tr><th>Shift Summary</th><th>Count</th></tr></thead>
-          <tbody id="rsrEosSummaryBody"></tbody>
-        </table>
-
-        <table style="margin-top:20px">
-          <thead><tr><th>Date</th><th>Tour</th><th>VRID</th><th>Lane</th><th>Status</th><th>Carrier</th><th>Age Bucket</th><th>Initial FMER Status</th><th>Missing Stem Leg</th><th>FMER/BOBTAIL</th><th>FMER/BOBTAIL VRID</th><th>Current Utilization %</th><th>TPA VRID</th><th>Comments</th></tr></thead>
-          <tbody id="rsrEosDetailBody"></tbody>
-        </table>
+        <table style="width:auto;min-width:350px"><thead><tr><th>Shift Summary</th><th>Count</th></tr></thead><tbody id="rsrEosSummaryBody"></tbody></table>
+        <table style="margin-top:20px"><thead><tr><th>Date</th><th>Tour</th><th>VRID</th><th>Lane</th><th>Status</th><th>Carrier</th><th>Age Bucket</th><th>Initial FMER Status</th><th>Missing Stem Leg</th><th>FMER/BOBTAIL</th><th>FMER/BOBTAIL VRID</th><th>Current Utilization %</th><th>TPA VRID</th><th>Comments</th></tr></thead><tbody id="rsrEosDetailBody"></tbody></table>
       </div>
       <div class="action-bar">
         <button class="btn-copy" id="rsrCopyBtn" onclick="copyContent('rsrCopyableContent','rsrCopyBtn')">📋 Copy to Clipboard</button>
@@ -327,338 +299,222 @@ body{background:var(--bg);font-family:system-ui,-apple-system,sans-serif;margin:
   </div>
 </div>
 
-<!-- TAB 3: GATEWAY DIRECTORY -->
+<!-- TAB 3 -->
 <div class="tab-content" id="tab-gateway">
   <div class="section-title">Gateway Email Directory</div>
   <input type="text" class="search-box" id="searchBox" placeholder="🔍 Search gateway code..." oninput="filterGateways()">
-  <table class="gateway-table" id="gatewayTable">
-    <thead><tr><th>Gateway</th><th>Email Listings</th></tr></thead>
-    <tbody id="gatewayTableBody"></tbody>
-  </table>
+  <table class="gateway-table" id="gatewayTable"><thead><tr><th>Gateway</th><th>Email Listings</th></tr></thead><tbody id="gatewayTableBody"></tbody></table>
 </div>
 
 <script>
-const gatewayData = {
-  "KABE":"abeamazon@pinnaclelogistics.com; kabe-amazon-air-alert@amazon.com",
-  "KAFW":"kafw-boss@amazon.com; kafw-dock@amazon.com; kafw-leadership@amazon.com; kafw-ops@amazon.com; tom-kafw@amazon.com",
-  "KATL":"katl-amazon-air-alert@amazon.com; atl.amz-ops@swissport.com",
-  "KAUS":"ggatlin@pinnaclelogistics.com; ausadmin@pinnaclelogistics.com; auscontrol@wfs.aero",
-  "KBDL":"kmcintosh@pinnaclelogistics.com; bdlamazon@pinnaclelogistics.com; kbdl-amazon-air-alert@amazon.com",
-  "KBNA":"azaleah.davis@lgstx.com; william.ferguson@lgstx.com; deanna.billingsley@lgstx.com; denise.sierra@lgstx.com; evan.hailey@lgstx.com; rumaan.aden@lgstx.com; bnanashvillea@gmail.com; candice.gilchrist@lgstx.com; shawn.dunning@lgstx.com; russell.roberts@lgstx.com",
-  "KBWI":"BWIAmazon@pinnaclelogistics.com; bwimod@pinnaclelogistics.com; kbwi-boss@amazon.com; kbwi-ops@amazon.com; kbwi-leadership@amazon.com; kbwi-opsmgr@amazon.com; tom-kbwi@amazon.com",
-  "KCA1":"melissa.pacheco@ctdi.com; kazmen@amazon.com; lpanduro@ctdi.com; mtarango@ctdi.com; seberwein@ctdi.com",
-  "KCLT":"amzn.clt@airborneglobal.com; kclt-amazon-air-alert@amazon.com",
-  "KCVG":"kcvg-amazon-air-alert@amazon.com; kcvg-leadership@amazon.com; kcvg-logistics@amazon.com; kcvg-boss@amazon.com; kcvg-ops@amazon.com",
-  "KDEN":"brittany.sanchez@swissport.com; kden-amazon-air-alert@amazon.com",
-  "KDFW":"aamzn.dfw@airborneglobal.com; DFWamazon@pinnaclelogistics.com; kdfw-amazon-air-alert@amazon.com",
-  "KIAH":"iahops@primeflight.com; kiah-amazon-air-alert@amazon.com",
-  "KILN":"tom-kiln@amazon.com; kiln-boss@amazon.com; kiln-leadership@amazon.com; kiln-ob-dock@amazon.com; kiln-ops@amazon.com; kiln-sort-mgrs@amazon.com; tom-kiln-leads@amazon.com",
-  "KJFK":"kjfk-amazon-air-alert@amazon.com",
-  "KLAL":"klal-leadership@amazon.com; klal-boss@amazon.com; klal-ops@amazon.com; klal-sort-managers@amazon.com; klal-shipdock@amazon.com; tom-associates-klal@amazon.com; tom-klal@amazon.com; tom-leads-klal@amazon.com",
-  "KLAX":"Laxamz@wfs.aero; Vivian.Ortiz@wfs.aero; Avalle@wfs.aero",
-  "KMIA":"miaamazon@stratair.net; kmia-amazon-air-alert@amazon.com",
-  "KMSP":"MSPamazon@pinnaclelogistics.com; kmsp-amazon-air-alert@amazon.com",
-  "KMSY":"msyops@wfs.aero",
-  "KONT":"amzn.ont@airborneglobal.com; MTSONT@primeflight.com; kont-amazon-air-alert@amazon.com",
-  "KORD":"kord-amazon-air-alert@amazon.com",
-  "KPDX":"mtspdx@primeflight.com; kpdxops@majesticterminalservices.com; kpdx-amazon-air-alert@amazon.com",
-  "KPHX":"amzn.phx@airborneglobal.com; PHXaerosmith@casusa.com; kphx-amazon-air-alert@amazon.com",
-  "KRFD":"amzn.rfd@airborneglobal.com; RFDamazon@pinnaclelogistics.com; krfd-manager@amazon.com; tom-krfd@amazon.com; tom-krfd-leads@amazon.com; krfd-amazon-air-alert@amazon.com; krfd-boss@amazon.com; krfd-leadership@amazon.com; krfd-ops-mgrs@amazon.com",
-  "KRIC":"jacqueline.kendall@majesticterminalservices.com; brandon.rubio@majesticterminalservices.com",
-  "KRIV":"kriv-boss@amazon.com; kriv-leadership@amazon.com; kriv-ops@amazon.com; kriv-ob-dock@amazon.com; tom-kriv@amazon.com; kriv-casemanagement@amazon.com; kriv-am@amazon.com; kriv-ib-dock@amazon.com; tom-kriv-leads@amazon.com; tom-kriv-specialist@amazon.com",
-  "KSBD":"ksbd-escalations@amazon.com; ksbd-leadership@amazon.com",
-  "KSCK":"amzn.sck@airborneglobal.com; SCKAmazon@casusa.com; ksck-amazon-air-alert@amazon.com",
-  "KSEA":"amzn.sea@airborneglobal.com; ksea-amazon-air-alert@amazon.com",
-  "KSFO":"ksfo-amazon-air-alert@amazon.com",
-  "KSKF":"amzn.skf@airborneglobal.com; kskf-amazon-air-alert@amazon.com",
-  "KSMF":"SMFAmazon@wfs.aero; ksmf-amazon-air-alert@amazon.com",
-  "KSTL":"mts.stl@majesticterminalservices.com; kstl-amazon-air-alert@amazon.com",
-  "KTPA":"tpamgt@abxair.com; tpa-admin@abxair.com; ktpa-amazon-air-alert@amazon.com; Hoss.Marting@lgstx.com",
-  "PHNL":"amazonops@pacificaircargo.com"
-};
+const gatewayData={"KABE":"abeamazon@pinnaclelogistics.com; kabe-amazon-air-alert@amazon.com","KAFW":"kafw-boss@amazon.com; kafw-dock@amazon.com; kafw-leadership@amazon.com; kafw-ops@amazon.com; tom-kafw@amazon.com","KATL":"katl-amazon-air-alert@amazon.com; atl.amz-ops@swissport.com","KAUS":"ggatlin@pinnaclelogistics.com; ausadmin@pinnaclelogistics.com; auscontrol@wfs.aero","KBDL":"kmcintosh@pinnaclelogistics.com; bdlamazon@pinnaclelogistics.com; kbdl-amazon-air-alert@amazon.com","KBNA":"azaleah.davis@lgstx.com; william.ferguson@lgstx.com; deanna.billingsley@lgstx.com; denise.sierra@lgstx.com; evan.hailey@lgstx.com; rumaan.aden@lgstx.com; bnanashvillea@gmail.com; candice.gilchrist@lgstx.com; shawn.dunning@lgstx.com; russell.roberts@lgstx.com","KBWI":"BWIAmazon@pinnaclelogistics.com; bwimod@pinnaclelogistics.com; kbwi-boss@amazon.com; kbwi-ops@amazon.com; kbwi-leadership@amazon.com; kbwi-opsmgr@amazon.com; tom-kbwi@amazon.com","KCA1":"melissa.pacheco@ctdi.com; kazmen@amazon.com; lpanduro@ctdi.com; mtarango@ctdi.com; seberwein@ctdi.com","KCLT":"amzn.clt@airborneglobal.com; kclt-amazon-air-alert@amazon.com","KCVG":"kcvg-amazon-air-alert@amazon.com; kcvg-leadership@amazon.com; kcvg-logistics@amazon.com; kcvg-boss@amazon.com; kcvg-ops@amazon.com","KDEN":"brittany.sanchez@swissport.com; kden-amazon-air-alert@amazon.com","KDFW":"aamzn.dfw@airborneglobal.com; DFWamazon@pinnaclelogistics.com; kdfw-amazon-air-alert@amazon.com","KIAH":"iahops@primeflight.com; kiah-amazon-air-alert@amazon.com","KILN":"tom-kiln@amazon.com; kiln-boss@amazon.com; kiln-leadership@amazon.com; kiln-ob-dock@amazon.com; kiln-ops@amazon.com; kiln-sort-mgrs@amazon.com; tom-kiln-leads@amazon.com","KJFK":"kjfk-amazon-air-alert@amazon.com","KLAL":"klal-leadership@amazon.com; klal-boss@amazon.com; klal-ops@amazon.com; klal-sort-managers@amazon.com; klal-shipdock@amazon.com; tom-associates-klal@amazon.com; tom-klal@amazon.com; tom-leads-klal@amazon.com","KLAX":"Laxamz@wfs.aero; Vivian.Ortiz@wfs.aero; Avalle@wfs.aero","KMIA":"miaamazon@stratair.net; kmia-amazon-air-alert@amazon.com","KMSP":"MSPamazon@pinnaclelogistics.com; kmsp-amazon-air-alert@amazon.com","KMSY":"msyops@wfs.aero","KONT":"amzn.ont@airborneglobal.com; MTSONT@primeflight.com; kont-amazon-air-alert@amazon.com","KORD":"kord-amazon-air-alert@amazon.com","KPDX":"mtspdx@primeflight.com; kpdxops@majesticterminalservices.com; kpdx-amazon-air-alert@amazon.com","KPHX":"amzn.phx@airborneglobal.com; PHXaerosmith@casusa.com; kphx-amazon-air-alert@amazon.com","KRFD":"amzn.rfd@airborneglobal.com; RFDamazon@pinnaclelogistics.com; krfd-manager@amazon.com; tom-krfd@amazon.com; tom-krfd-leads@amazon.com; krfd-amazon-air-alert@amazon.com; krfd-boss@amazon.com; krfd-leadership@amazon.com; krfd-ops-mgrs@amazon.com","KRIC":"jacqueline.kendall@majesticterminalservices.com; brandon.rubio@majesticterminalservices.com","KRIV":"kriv-boss@amazon.com; kriv-leadership@amazon.com; kriv-ops@amazon.com; kriv-ob-dock@amazon.com; tom-kriv@amazon.com; kriv-casemanagement@amazon.com; kriv-am@amazon.com; kriv-ib-dock@amazon.com; tom-kriv-leads@amazon.com; tom-kriv-specialist@amazon.com","KSBD":"ksbd-escalations@amazon.com; ksbd-leadership@amazon.com","KSCK":"amzn.sck@airborneglobal.com; SCKAmazon@casusa.com; ksck-amazon-air-alert@amazon.com","KSEA":"amzn.sea@airborneglobal.com; ksea-amazon-air-alert@amazon.com","KSFO":"ksfo-amazon-air-alert@amazon.com","KSKF":"amzn.skf@airborneglobal.com; kskf-amazon-air-alert@amazon.com","KSMF":"SMFAmazon@wfs.aero; ksmf-amazon-air-alert@amazon.com","KSTL":"mts.stl@majesticterminalservices.com; kstl-amazon-air-alert@amazon.com","KTPA":"tpamgt@abxair.com; tpa-admin@abxair.com; ktpa-amazon-air-alert@amazon.com; Hoss.Marting@lgstx.com","PHNL":"amazonops@pacificaircargo.com"};
 
-const DEFAULT_FLIGHT_TO = 'roc-airdelay@amazon.com;hyd-airdelay@amazon.com';
-const RSR_TO = 'rsr-eos-summary@amazon.com';
-const PRIORITY_QUEUE_URL = 'https://paragon-na.amazon.com/hz/dox-search?searchQuery=(queue:%22toc-na-priority-loads@amazon.com%22)%20AND%20(-status:%22RESOLVED%22)&contentType=CASE&pageSize=75&sortField=lastOutboundDate&sortOrder=asc';
-const AIR_SHUTTLE_URL = 'https://paragon-na.amazon.com/hz/dox-search?searchQuery=(%22OutboundAirShuttle%22%20OR%20%22OutboundFresh%22%20OR%20%22TransfersFresh%22)%20AND%20-status:%22Resolved%22%20AND%20(queue:%22roc-trailer-team@amazon.com%22%20OR%20queue:%22noc-na-ib-swa@amazon.com%22%20OR%20queue:%22toc-na-support@amazon.com%22%20OR%20queue:%22azng-na-escalations@amazon.com%22%20OR%20queue:%22roc-na-3p-trailer-issues@amazon.com%22)%20AND%20creationDate:[%201590476400000%20TO%20*%20]&contentType=CASE&pageSize=75&sortField=creationDate&sortOrder=desc';
+const DEFAULT_FLIGHT_TO='roc-airdelay@amazon.com;hyd-airdelay@amazon.com';
+const RSR_TO='rsr-eos-summary@amazon.com';
+const PRIORITY_QUEUE_URL='https://paragon-na.amazon.com/hz/dox-search?searchQuery=(queue:%22toc-na-priority-loads@amazon.com%22)%20AND%20(-status:%22RESOLVED%22)&contentType=CASE&pageSize=75&sortField=lastOutboundDate&sortOrder=asc';
+const AIR_SHUTTLE_URL='https://paragon-na.amazon.com/hz/dox-search?searchQuery=(%22OutboundAirShuttle%22%20OR%20%22OutboundFresh%22%20OR%20%22TransfersFresh%22)%20AND%20-status:%22Resolved%22%20AND%20(queue:%22roc-trailer-team@amazon.com%22%20OR%20queue:%22noc-na-ib-swa@amazon.com%22%20OR%20queue:%22toc-na-support@amazon.com%22%20OR%20queue:%22azng-na-escalations@amazon.com%22%20OR%20queue:%22roc-na-3p-trailer-issues@amazon.com%22)%20AND%20creationDate:[%201590476400000%20TO%20*%20]&contentType=CASE&pageSize=75&sortField=creationDate&sortOrder=desc';
 
-function getTodayDate() {
-  const d = new Date();
-  return (d.getMonth()+1)+'/'+d.getDate()+'/'+d.getFullYear();
-}
+function getTodayDate(){const d=new Date();return(d.getMonth()+1)+'/'+d.getDate()+'/'+d.getFullYear();}
 
-// ========== MULTI-CELL PASTE HANDLER ==========
-function handlePaste(e) {
+// ===== ROBUST MULTI-CELL PASTE HANDLER =====
+document.addEventListener('paste', function(e) {
   const target = e.target;
-  if (!target.matches('input, textarea')) return;
+  // Only handle paste on inputs/textareas inside spreadsheet tables
+  if (!target.matches('.spreadsheet input, .spreadsheet textarea')) return;
   
   const clipboardData = e.clipboardData || window.clipboardData;
-  const pastedText = clipboardData.getData('text');
+  const pastedText = clipboardData.getData('text/plain');
   
-  // Check if pasted data contains tabs or newlines (multi-cell data from Excel/Sheets)
+  // If no tabs and no multiple lines, let default paste happen (single cell)
   if (!pastedText.includes('\t') && !pastedText.includes('\n')) return;
   
+  // Prevent default single-cell paste
   e.preventDefault();
+  e.stopPropagation();
   
-  // Parse the pasted data into rows and columns
-  const rows = pastedText.split('\n').filter(row => row.trim() !== '');
-  const parsedData = rows.map(row => row.split('\t'));
+  // Parse clipboard: split by newline for rows, tab for columns
+  const pastedRows = pastedText.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n');
+  // Remove last empty row if exists (common with Excel copy)
+  if (pastedRows.length > 0 && pastedRows[pastedRows.length - 1].trim() === '') {
+    pastedRows.pop();
+  }
+  const parsedData = pastedRows.map(row => row.split('\t'));
   
-  // Find the target cell position
-  const td = target.closest('td');
-  const tr = td.closest('tr');
-  const tbody = tr.closest('tbody');
+  // Find which table, tbody, row, and column we're in
+  const currentTd = target.closest('td');
+  const currentTr = currentTd.closest('tr');
+  const tbody = currentTr.closest('tbody');
   const table = tbody.closest('table');
   
-  // Get all rows in the tbody
-  const allRows = Array.from(tbody.querySelectorAll('tr'));
-  const startRowIndex = allRows.indexOf(tr);
+  // Get column index by counting td elements before this one
+  const tdsInRow = Array.from(currentTr.children);
+  const startCol = tdsInRow.indexOf(currentTd);
   
-  // Get all cells in the current row to find column index
-  const allCells = Array.from(tr.querySelectorAll('td'));
-  const startColIndex = allCells.indexOf(td);
+  // Get row index
+  let allRows = Array.from(tbody.children);
+  const startRow = allRows.indexOf(currentTr);
   
-  // Get total columns in the table
-  const totalCols = allCells.length;
+  // Determine which row creator to use
+  const isRSR = (table.id === 'rsrDetailTable');
+  const rowCreator = isRSR ? createRSRRow : createFlightRow;
   
-  // Determine if we need more rows
-  const rowsNeeded = startRowIndex + parsedData.length;
-  while (allRows.length < rowsNeeded) {
-    // Add more rows if needed
-    const rowFn = table.id === 'rsrDetailTable' ? createRSRRow : createFlightRow;
-    tbody.insertAdjacentHTML('beforeend', rowFn());
-    allRows.push(tbody.lastElementChild);
+  // Add more rows if needed
+  const totalRowsNeeded = startRow + parsedData.length;
+  while (allRows.length < totalRowsNeeded) {
+    tbody.insertAdjacentHTML('beforeend', rowCreator());
+    allRows = Array.from(tbody.children);
   }
   
-  // Fill in the data
-  parsedData.forEach((rowData, rowOffset) => {
-    const currentRow = allRows[startRowIndex + rowOffset];
-    if (!currentRow) return;
-    
-    const cells = currentRow.querySelectorAll('td');
-    rowData.forEach((cellValue, colOffset) => {
-      const targetColIndex = startColIndex + colOffset;
-      if (targetColIndex >= cells.length) return;
-      
-      const input = cells[targetColIndex].querySelector('input, textarea');
-      if (input) {
-        input.value = cellValue.trim();
-        // Trigger input event for any listeners
-        input.dispatchEvent(new Event('input', { bubbles: true }));
-      }
-    });
-  });
+  // Fill data into cells
+  let filledRows = 0;
+  let filledCols = 0;
   
-  // Show toast notification
-  showPasteToast(parsedData.length, parsedData[0] ? parsedData[0].length : 0);
-}
-
-function showPasteToast(rows, cols) {
+  for (let r = 0; r < parsedData.length; r++) {
+    const targetRow = allRows[startRow + r];
+    if (!targetRow) continue;
+    
+    const targetTds = Array.from(targetRow.children);
+    filledRows++;
+    
+    for (let c = 0; c < parsedData[r].length; c++) {
+      const colIndex = startCol + c;
+      if (colIndex >= targetTds.length) continue;
+      
+      const td = targetTds[colIndex];
+      const field = td.querySelector('input, textarea');
+      if (field) {
+        field.value = parsedData[r][c].trim();
+        if (r === 0 && c + 1 > filledCols) filledCols = c + 1;
+      }
+    }
+  }
+  
+  // Show success toast
   const toast = document.getElementById('pasteToast');
-  toast.textContent = `✅ Pasted ${rows} row${rows>1?'s':''} × ${cols} column${cols>1?'s':''} successfully!`;
+  toast.textContent = '✅ Pasted ' + filledRows + ' row' + (filledRows>1?'s':'') + ' × ' + filledCols + ' column' + (filledCols>1?'s':'') + ' successfully!';
   toast.classList.add('show');
-  setTimeout(() => toast.classList.remove('show'), 2500);
+  setTimeout(()=>toast.classList.remove('show'), 2500);
+});
+// ===== END PASTE HANDLER =====
+
+function init(){
+  const select=document.getElementById('gatewaySelect');
+  const tbody=document.getElementById('gatewayTableBody');
+  let sH='<option value="">Select gateway</option>',tH='';
+  Object.keys(gatewayData).sort().forEach(c=>{sH+=`<option value="${c}">${c}</option>`;tH+=`<tr><td class="gw-code">${c}</td><td class="gw-email">${gatewayData[c]}</td></tr>`;});
+  select.innerHTML=sH;tbody.innerHTML=tH;
+  clearTable('tableBody',10,createFlightRow);
+  clearTable('rsrTableBody',5,createRSRRow);
 }
 
-// Attach paste handler to document (event delegation)
-document.addEventListener('paste', handlePaste);
-// ========== END PASTE HANDLER ==========
-
-function init() {
-  const select = document.getElementById('gatewaySelect');
-  const tbody = document.getElementById('gatewayTableBody');
-  let sHtml = '<option value="">Select gateway</option>';
-  let tHtml = '';
-  Object.keys(gatewayData).sort().forEach(c => {
-    sHtml += `<option value="${c}">${c}</option>`;
-    tHtml += `<tr><td class="gw-code">${c}</td><td class="gw-email">${gatewayData[c]}</td></tr>`;
-  });
-  select.innerHTML = sHtml;
-  tbody.innerHTML = tHtml;
-  clearTable('tableBody', 10, createFlightRow);
-  clearTable('rsrTableBody', 5, createRSRRow);
-}
-
-function showGatewayEmails() {
-  const val = document.getElementById('gatewaySelect').value;
-  const d = document.getElementById('emailDisplay');
-  if (val && gatewayData[val]) { document.getElementById('emailList').textContent = gatewayData[val]; d.classList.add('show'); }
+function showGatewayEmails(){
+  const v=document.getElementById('gatewaySelect').value,d=document.getElementById('emailDisplay');
+  if(v&&gatewayData[v]){document.getElementById('emailList').textContent=gatewayData[v];d.classList.add('show');}
   else d.classList.remove('show');
 }
 
-function createFlightRow() {
-  return `<tr><td><input type="text" placeholder="Flight #"></td><td><input type="text" placeholder="VRID"></td><td><input type="text" placeholder="Origin-Dest"></td><td><input type="text" placeholder="0"></td><td><textarea placeholder="VRID-1, VRID-2..."></textarea></td><td><input type="text" placeholder="Case #"></td><td><input type="text" placeholder="VRID"></td><td><input type="text" placeholder="Status"></td></tr>`;
+function createFlightRow(){
+  return '<tr><td><input type="text" placeholder="Flight #"></td><td><input type="text" placeholder="VRID"></td><td><input type="text" placeholder="Origin-Dest"></td><td><input type="text" placeholder="0"></td><td><input type="text" placeholder="VRID-1, VRID-2..."></td><td><input type="text" placeholder="Case #"></td><td><input type="text" placeholder="VRID"></td><td><input type="text" placeholder="Status"></td></tr>';
 }
 
-function createRSRRow() {
-  return `<tr><td><input type="text" placeholder="MM/DD/YYYY"></td><td><input type="text" placeholder="Tour ID"></td><td><input type="text" placeholder="VRID"></td><td><input type="text" placeholder="Lane"></td><td><input type="text" placeholder="Status"></td><td><input type="text" placeholder="Carrier"></td><td><input type="text" placeholder="Bucket"></td><td><input type="text" placeholder="YES/NO"></td><td><input type="text" placeholder="Y/N"></td><td><input type="text" placeholder="FMER/BOBTAIL"></td><td><input type="text" placeholder="VRID"></td><td><input type="text" placeholder="%"></td><td><input type="text" placeholder="TPA VRID"></td><td><textarea placeholder="Comments..."></textarea></td></tr>`;
+function createRSRRow(){
+  return '<tr><td><input type="text" placeholder="MM/DD/YYYY"></td><td><input type="text" placeholder="Tour ID"></td><td><input type="text" placeholder="VRID"></td><td><input type="text" placeholder="Lane"></td><td><input type="text" placeholder="Status"></td><td><input type="text" placeholder="Carrier"></td><td><input type="text" placeholder="Bucket"></td><td><input type="text" placeholder="YES/NO"></td><td><input type="text" placeholder="Y/N"></td><td><input type="text" placeholder="FMER/BOBTAIL"></td><td><input type="text" placeholder="VRID"></td><td><input type="text" placeholder="%"></td><td><input type="text" placeholder="TPA VRID"></td><td><input type="text" placeholder="Comments..."></td></tr>';
 }
 
-function clearTable(tbodyId, rows, rowFn) {
-  let html = '';
-  for (let i = 0; i < rows; i++) html += rowFn();
-  document.getElementById(tbodyId).innerHTML = html;
+function clearTable(id,rows,fn){let h='';for(let i=0;i<rows;i++)h+=fn();document.getElementById(id).innerHTML=h;}
+function addRows(id,count,fn){let h='';for(let i=0;i<count;i++)h+=fn();document.getElementById(id).insertAdjacentHTML('beforeend',h);}
+
+function toggleTheme(){document.body.classList.toggle('dark');document.getElementById('themeToggle').classList.toggle('active');}
+function switchTab(i){document.querySelectorAll('.tab-label').forEach((t,x)=>t.classList.toggle('active',x===i));document.querySelectorAll('.tab-content').forEach((c,x)=>c.classList.toggle('active',x===i));}
+function goBack(s,h){document.getElementById(s).style.display='block';document.getElementById(h).style.display='none';}
+
+function getFlightData(){
+  const d=[];
+  document.querySelectorAll('#tableBody tr').forEach(row=>{
+    const c=Array.from(row.querySelectorAll('input')).map(i=>i.value.trim());
+    if(c.some(v=>v))d.push({flight:c[0],vrid:c[1],lane:c[2],delay:c[3],impacted:c[4],caseNum:c[5],rescheduled:c[6],status:c[7]});
+  });return d;
 }
 
-function addRows(tbodyId, count, rowFn) {
-  let html = '';
-  for (let i = 0; i < count; i++) html += rowFn();
-  document.getElementById(tbodyId).insertAdjacentHTML('beforeend', html);
+function getRSRSummary(){
+  const inputs=document.querySelectorAll('#rsrSummaryTable input');
+  return[{label:'Total Single Way VRIDs',val:inputs[0].value.trim()||'0'},{label:'Total VRIDs scheduled in shift',val:inputs[1].value.trim()||'0'},{label:'Total Backlogs Added',val:inputs[2].value.trim()||'0'},{label:'Total TPA added',val:inputs[3].value.trim()||'0'}];
 }
 
-function toggleTheme() { document.body.classList.toggle('dark'); document.getElementById('themeToggle').classList.toggle('active'); }
-function switchTab(i) {
-  document.querySelectorAll('.tab-label').forEach((t,idx) => t.classList.toggle('active', idx===i));
-  document.querySelectorAll('.tab-content').forEach((c,idx) => c.classList.toggle('active', idx===i));
+function getRSRDetail(){
+  const d=[];
+  document.querySelectorAll('#rsrTableBody tr').forEach(row=>{
+    const c=Array.from(row.querySelectorAll('input')).map(i=>i.value.trim());
+    if(c.some(v=>v))d.push(c);
+  });return d;
 }
 
-function goBack(showId, hideId) { document.getElementById(showId).style.display='block'; document.getElementById(hideId).style.display='none'; }
-
-function getFlightData() {
-  const data = [];
-  document.querySelectorAll('#tableBody tr').forEach(row => {
-    const cells = Array.from(row.querySelectorAll('input,textarea')).map(c=>c.value.trim());
-    if (cells.some(v=>v)) data.push({flight:cells[0],vrid:cells[1],lane:cells[2],delay:cells[3],impacted:cells[4],caseNum:cells[5],rescheduled:cells[6],status:cells[7]});
-  });
-  return data;
-}
-
-function getRSRSummary() {
-  const inputs = document.querySelectorAll('#rsrSummaryTable input');
-  return [
-    {label:'Total Single Way VRIDs', val:inputs[0].value.trim()||'0'},
-    {label:'Total VRIDs scheduled in shift', val:inputs[1].value.trim()||'0'},
-    {label:'Total Backlogs Added', val:inputs[2].value.trim()||'0'},
-    {label:'Total TPA added', val:inputs[3].value.trim()||'0'}
-  ];
-}
-
-function getRSRDetail() {
-  const data = [];
-  document.querySelectorAll('#rsrTableBody tr').forEach(row => {
-    const cells = Array.from(row.querySelectorAll('input,textarea')).map(c=>c.value.trim());
-    if (cells.some(v=>v)) data.push(cells);
-  });
-  return data;
-}
-
-function sendEOS() {
-  const data = getFlightData();
-  if (!data.length) { alert('Please enter at least one flight record.'); return; }
+function sendEOS(){
+  const data=getFlightData();
+  if(!data.length){alert('Please enter at least one flight record.');return;}
   document.getElementById('planeOverlay').classList.add('active');
-  setTimeout(() => {
+  setTimeout(()=>{
     document.getElementById('planeOverlay').classList.remove('active');
-    let html = '';
-    data.forEach(d => { html += `<tr><td>${d.flight}</td><td>${d.vrid}</td><td>${d.lane}</td><td>${d.delay}</td><td>${d.impacted}</td><td>${d.caseNum}</td><td>${d.rescheduled}</td><td>${d.status}</td></tr>`; });
-    document.getElementById('eosTableBody').innerHTML = html;
+    let h='';data.forEach(d=>{h+=`<tr><td>${d.flight}</td><td>${d.vrid}</td><td>${d.lane}</td><td>${d.delay}</td><td>${d.impacted}</td><td>${d.caseNum}</td><td>${d.rescheduled}</td><td>${d.status}</td></tr>`;});
+    document.getElementById('eosTableBody').innerHTML=h;
     document.getElementById('mainView').style.display='none';
     document.getElementById('eosView').style.display='block';
-  }, 1800);
+  },1800);
 }
 
-function sendRSR() {
-  const detail = getRSRDetail();
-  const summary = getRSRSummary();
-  if (!detail.length) { alert('Please enter at least one row in TPA/FMER Details.'); return; }
-
+function sendRSR(){
+  const detail=getRSRDetail(),summary=getRSRSummary();
+  if(!detail.length){alert('Please enter at least one row in TPA/FMER Details.');return;}
   document.getElementById('truckOverlay').classList.add('active');
-  setTimeout(() => {
+  setTimeout(()=>{
     document.getElementById('truckOverlay').classList.remove('active');
-    let sHtml = '';
-    summary.forEach(s => { sHtml += `<tr><td>${s.label}</td><td style="text-align:center;font-weight:700">${s.val}</td></tr>`; });
-    document.getElementById('rsrEosSummaryBody').innerHTML = sHtml;
-
-    let dHtml = '';
-    detail.forEach(r => { dHtml += '<tr>' + r.map(c=>`<td>${c}</td>`).join('') + '</tr>'; });
-    document.getElementById('rsrEosDetailBody').innerHTML = dHtml;
-
+    let sH='';summary.forEach(s=>{sH+=`<tr><td>${s.label}</td><td style="text-align:center;font-weight:700">${s.val}</td></tr>`;});
+    document.getElementById('rsrEosSummaryBody').innerHTML=sH;
+    let dH='';detail.forEach(r=>{dH+='<tr>'+r.map(c=>`<td>${c}</td>`).join('')+'</tr>';});
+    document.getElementById('rsrEosDetailBody').innerHTML=dH;
     document.getElementById('rsrMainView').style.display='none';
     document.getElementById('rsrEosView').style.display='block';
-  }, 1800);
+  },1800);
 }
 
-function copyContent(blockId, btnId) {
-  const content = document.getElementById(blockId);
-  const range = document.createRange();
+function copyContent(blockId,btnId){
+  const content=document.getElementById(blockId),range=document.createRange();
   range.selectNodeContents(content);
-  const sel = window.getSelection();
-  sel.removeAllRanges(); sel.addRange(range);
-  try {
-    document.execCommand('copy');
-    const btn = document.getElementById(btnId);
-    btn.innerHTML = '✅ Copied!'; btn.classList.add('copied');
-    setTimeout(() => { btn.innerHTML = '📋 Copy to Clipboard'; btn.classList.remove('copied'); }, 2000);
-  } catch(e) { alert('Copy failed.'); }
+  const sel=window.getSelection();sel.removeAllRanges();sel.addRange(range);
+  try{document.execCommand('copy');const btn=document.getElementById(btnId);btn.innerHTML='✅ Copied!';btn.classList.add('copied');setTimeout(()=>{btn.innerHTML='📋 Copy to Clipboard';btn.classList.remove('copied');},2000);}catch(e){alert('Copy failed.');}
   sel.removeAllRanges();
 }
 
-function sendFlightOutlook() {
-  const data = getFlightData();
-  let html = `<html><body style="font-family:Calibri,Arial,sans-serif;font-size:14px;color:#333;">
-<p><b>Hello Team,</b></p>
-<p>Please find below <b>EOS Flight Delay Report</b> for Shift - #_ :</p>
-<p>📌 <b>Priority Queue Link</b> (EOS Backlog: #): <a href="${PRIORITY_QUEUE_URL}">Link</a></p>
-<p>🔗 Link for the Queue to track all Air Shuttle cases: <a href="${AIR_SHUTTLE_URL}">Link</a></p>
-<p>📊 <b>FT- Share Point Tracker:</b> <a href="#">Link</a></p><br>
-<table border="1" cellpadding="8" cellspacing="0" style="border-collapse:collapse;border:2px solid #333;font-size:13px;width:100%;">
-<tr style="background:#1e1b4b;color:#fff;"><th style="border:1px solid #333;padding:10px">Flight</th><th style="border:1px solid #333;padding:10px">Flight VRID</th><th style="border:1px solid #333;padding:10px">Lane</th><th style="border:1px solid #333;padding:10px">Delay (min)</th><th style="border:1px solid #333;padding:10px">Impacted VRIDs</th><th style="border:1px solid #333;padding:10px">Case</th><th style="border:1px solid #333;padding:10px">Rescheduled VRID</th><th style="border:1px solid #333;padding:10px">Status</th></tr>`;
-  data.forEach((d,i) => {
-    const bg = i%2===0?'#fff':'#f3f4f6';
-    html += `<tr style="background:${bg}"><td style="border:1px solid #333;padding:8px;text-align:center">${d.flight}</td><td style="border:1px solid #333;padding:8px;text-align:center">${d.vrid}</td><td style="border:1px solid #333;padding:8px;text-align:center">${d.lane}</td><td style="border:1px solid #333;padding:8px;text-align:center">${d.delay}</td><td style="border:1px solid #333;padding:8px;text-align:center">${d.impacted}</td><td style="border:1px solid #333;padding:8px;text-align:center">${d.caseNum}</td><td style="border:1px solid #333;padding:8px;text-align:center">${d.rescheduled}</td><td style="border:1px solid #333;padding:8px;text-align:center">${d.status}</td></tr>`;
-  });
-  html += `</table><br><p>Thank you,<br>EOS Flight Team</p></body></html>`;
-  copyHtmlAndOpenMailto(html, 'EOS Flight Delay Report', DEFAULT_FLIGHT_TO);
+function sendFlightOutlook(){
+  const data=getFlightData();
+  let html=`<html><body style="font-family:Calibri,Arial,sans-serif;font-size:14px;color:#333;"><p><b>Hello Team,</b></p><p>Please find below <b>EOS Flight Delay Report</b> for Shift - #_ :</p><p>📌 <b>Priority Queue Link</b> (EOS Backlog: #): <a href="${PRIORITY_QUEUE_URL}">Link</a></p><p>🔗 Link for the Queue to track all Air Shuttle cases: <a href="${AIR_SHUTTLE_URL}">Link</a></p><p>📊 <b>FT- Share Point Tracker:</b> <a href="#">Link</a></p><br><table border="1" cellpadding="8" cellspacing="0" style="border-collapse:collapse;border:2px solid #333;font-size:13px;width:100%;"><tr style="background:#1e1b4b;color:#fff;"><th style="border:1px solid #333;padding:10px">Flight</th><th style="border:1px solid #333;padding:10px">Flight VRID</th><th style="border:1px solid #333;padding:10px">Lane</th><th style="border:1px solid #333;padding:10px">Delay (min)</th><th style="border:1px solid #333;padding:10px">Impacted VRIDs</th><th style="border:1px solid #333;padding:10px">Case</th><th style="border:1px solid #333;padding:10px">Rescheduled VRID</th><th style="border:1px solid #333;padding:10px">Status</th></tr>`;
+  data.forEach((d,i)=>{const bg=i%2===0?'#fff':'#f3f4f6';html+=`<tr style="background:${bg}"><td style="border:1px solid #333;padding:8px;text-align:center">${d.flight}</td><td style="border:1px solid #333;padding:8px;text-align:center">${d.vrid}</td><td style="border:1px solid #333;padding:8px;text-align:center">${d.lane}</td><td style="border:1px solid #333;padding:8px;text-align:center">${d.delay}</td><td style="border:1px solid #333;padding:8px;text-align:center">${d.impacted}</td><td style="border:1px solid #333;padding:8px;text-align:center">${d.caseNum}</td><td style="border:1px solid #333;padding:8px;text-align:center">${d.rescheduled}</td><td style="border:1px solid #333;padding:8px;text-align:center">${d.status}</td></tr>`;});
+  html+=`</table><br><p>Thank you,<br>EOS Flight Team</p></body></html>`;
+  copyHtmlAndOpenMailto(html,'EOS Flight Delay Report',DEFAULT_FLIGHT_TO);
 }
 
-function sendRSROutlook() {
-  const summary = getRSRSummary();
-  const detail = getRSRDetail();
-  const today = getTodayDate();
-
-  let html = `<html><body style="font-family:Calibri,Arial,sans-serif;font-size:14px;color:#333;">
-<p><b>Hello Team,</b></p>
-<p>Please find below RSR loads tracked in <b>Shift-#</b> -</p>
-<p>For extensive summary please refer: <a href="#">RSR Quip Link</a></p><br>
-
-<table border="1" cellpadding="8" cellspacing="0" style="border-collapse:collapse;border:2px solid #333;font-size:13px;width:auto;">
-<tr style="background:#1e1b4b;color:#fff;"><th style="border:1px solid #333;padding:10px">Shift Summary</th><th style="border:1px solid #333;padding:10px">Count</th></tr>`;
-  summary.forEach((s,i) => {
-    const bg = i%2===0?'#fff':'#f3f4f6';
-    html += `<tr style="background:${bg}"><td style="border:1px solid #333;padding:8px">${s.label}</td><td style="border:1px solid #333;padding:8px;text-align:center;font-weight:700">${s.val}</td></tr>`;
-  });
-  html += `</table><br>
-
-<table border="1" cellpadding="8" cellspacing="0" style="border-collapse:collapse;border:2px solid #333;font-size:12px;width:100%;">
-<tr style="background:#1e1b4b;color:#fff;"><th style="border:1px solid #333;padding:8px">Date</th><th style="border:1px solid #333;padding:8px">Tour</th><th style="border:1px solid #333;padding:8px">VRID</th><th style="border:1px solid #333;padding:8px">Lane</th><th style="border:1px solid #333;padding:8px">Status</th><th style="border:1px solid #333;padding:8px">Carrier</th><th style="border:1px solid #333;padding:8px">Age Bucket</th><th style="border:1px solid #333;padding:8px">Initial FMER Status</th><th style="border:1px solid #333;padding:8px">Missing Stem Leg</th><th style="border:1px solid #333;padding:8px">FMER/BOBTAIL</th><th style="border:1px solid #333;padding:8px">FMER/BOBTAIL VRID</th><th style="border:1px solid #333;padding:8px">Current Utilization %</th><th style="border:1px solid #333;padding:8px">TPA VRID</th><th style="border:1px solid #333;padding:8px">Comments</th></tr>`;
-  detail.forEach((r,i) => {
-    const bg = i%2===0?'#fff':'#f3f4f6';
-    html += `<tr style="background:${bg}">` + r.map(c=>`<td style="border:1px solid #333;padding:6px;text-align:center">${c}</td>`).join('') + '</tr>';
-  });
-  html += `</table><br><p>Thank you,<br>RSR EOS Team</p></body></html>`;
-
-  const subject = 'RSR Touring EOS Summary - ' + today;
-  copyHtmlAndOpenMailto(html, subject, RSR_TO);
+function sendRSROutlook(){
+  const summary=getRSRSummary(),detail=getRSRDetail(),today=getTodayDate();
+  let html=`<html><body style="font-family:Calibri,Arial,sans-serif;font-size:14px;color:#333;"><p><b>Hello Team,</b></p><p>Please find below RSR loads tracked in <b>Shift-#</b> -</p><p>For extensive summary please refer: <a href="#">RSR Quip Link</a></p><br><table border="1" cellpadding="8" cellspacing="0" style="border-collapse:collapse;border:2px solid #333;font-size:13px;width:auto;"><tr style="background:#1e1b4b;color:#fff;"><th style="border:1px solid #333;padding:10px">Shift Summary</th><th style="border:1px solid #333;padding:10px">Count</th></tr>`;
+  summary.forEach((s,i)=>{const bg=i%2===0?'#fff':'#f3f4f6';html+=`<tr style="background:${bg}"><td style="border:1px solid #333;padding:8px">${s.label}</td><td style="border:1px solid #333;padding:8px;text-align:center;font-weight:700">${s.val}</td></tr>`;});
+  html+=`</table><br><table border="1" cellpadding="8" cellspacing="0" style="border-collapse:collapse;border:2px solid #333;font-size:12px;width:100%;"><tr style="background:#1e1b4b;color:#fff;"><th style="border:1px solid #333;padding:8px">Date</th><th style="border:1px solid #333;padding:8px">Tour</th><th style="border:1px solid #333;padding:8px">VRID</th><th style="border:1px solid #333;padding:8px">Lane</th><th style="border:1px solid #333;padding:8px">Status</th><th style="border:1px solid #333;padding:8px">Carrier</th><th style="border:1px solid #333;padding:8px">Age Bucket</th><th style="border:1px solid #333;padding:8px">Initial FMER Status</th><th style="border:1px solid #333;padding:8px">Missing Stem Leg</th><th style="border:1px solid #333;padding:8px">FMER/BOBTAIL</th><th style="border:1px solid #333;padding:8px">FMER/BOBTAIL VRID</th><th style="border:1px solid #333;padding:8px">Current Utilization %</th><th style="border:1px solid #333;padding:8px">TPA VRID</th><th style="border:1px solid #333;padding:8px">Comments</th></tr>`;
+  detail.forEach((r,i)=>{const bg=i%2===0?'#fff':'#f3f4f6';html+=`<tr style="background:${bg}">`+r.map(c=>`<td style="border:1px solid #333;padding:6px;text-align:center">${c}</td>`).join('')+'</tr>';});
+  html+=`</table><br><p>Thank you,<br>RSR EOS Team</p></body></html>`;
+  copyHtmlAndOpenMailto(html,'RSR Touring EOS Summary - '+today,RSR_TO);
 }
 
-function copyHtmlAndOpenMailto(htmlBody, subject, to) {
-  const blob = new Blob([htmlBody], {type:'text/html'});
-  const item = new ClipboardItem({'text/html': blob});
-  navigator.clipboard.write([item]).then(() => {
-    window.location.href = `mailto:${to}?subject=${encodeURIComponent(subject)}`;
-  }).catch(() => {
-    window.location.href = `mailto:${to}?subject=${encodeURIComponent(subject)}`;
-  });
+function copyHtmlAndOpenMailto(h,s,t){
+  const blob=new Blob([h],{type:'text/html'});
+  const item=new ClipboardItem({'text/html':blob});
+  navigator.clipboard.write([item]).then(()=>{window.location.href=`mailto:${t}?subject=${encodeURIComponent(s)}`;}).catch(()=>{window.location.href=`mailto:${t}?subject=${encodeURIComponent(s)}`;});
 }
 
-function filterGateways() {
-  const q = document.getElementById('searchBox').value.toLowerCase();
-  document.querySelectorAll('#gatewayTable tbody tr').forEach(r => {
-    r.style.display = r.querySelector('.gw-code').textContent.toLowerCase().includes(q)?'':'none';
-  });
+function filterGateways(){
+  const q=document.getElementById('searchBox').value.toLowerCase();
+  document.querySelectorAll('#gatewayTable tbody tr').forEach(r=>{r.style.display=r.querySelector('.gw-code').textContent.toLowerCase().includes(q)?'':'none';});
 }
 
 init();
 </script>
-
 </body>
 </html>
