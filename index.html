@@ -171,21 +171,26 @@ body{background:var(--bg);font-family:system-ui,-apple-system,sans-serif;margin:
 .copy-hint{font-size:11px;color:var(--text-secondary);margin-top:12px;font-style:italic}
 .action-bar{display:flex;gap:12px;margin-top:20px;flex-wrap:wrap}
 .sub-title{font-size:15px;font-weight:700;color:var(--accent);margin:24px 0 10px;padding-bottom:6px;border-bottom:1px dashed var(--border)}
+
+.paste-toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;padding:12px 24px;border-radius:10px;font-size:14px;font-weight:600;z-index:9999;display:none;box-shadow:0 4px 16px rgba(99,102,241,.4)}
+.paste-toast.show{display:block;animation:toastIn .3s ease}
+@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(20px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
 </style>
 </head>
 <body>
 
-<!-- Plane overlay -->
+<!-- Overlays -->
 <div class="overlay" id="planeOverlay">
   <div class="plane-anim">✈️</div>
   <div class="overlay-text">Generating EOS Report...</div>
 </div>
-
-<!-- Truck overlay -->
 <div class="overlay" id="truckOverlay">
   <div class="truck-anim">🚛</div>
   <div class="overlay-text">Generating RSR EOS Report...</div>
 </div>
+
+<!-- Paste Toast -->
+<div class="paste-toast" id="pasteToast">✅ Data pasted across cells!</div>
 
 <div class="theme-toggle">
   <span>☀️</span>
@@ -235,7 +240,7 @@ body{background:var(--bg);font-family:system-ui,-apple-system,sans-serif;margin:
       <button class="btn-secondary" onclick="addRows('tableBody',5,createFlightRow)">➕ Add More Rows</button>
       <button class="btn-clear" onclick="clearTable('tableBody',10,createFlightRow)">🗑️ Clear All</button>
     </div>
-    <p class="helper-text">💡 All columns support paste from external sources.</p>
+    <p class="helper-text">💡 Copy entire rows from Excel/Sheets and paste — data auto-fills across all columns and rows!</p>
   </div>
 
   <div id="eosView" class="eos-view">
@@ -263,7 +268,7 @@ body{background:var(--bg);font-family:system-ui,-apple-system,sans-serif;margin:
 <div class="tab-content" id="tab-rsr">
   <div id="rsrMainView">
     <div class="section-title">🚛 RSR EOS - Shift Summary & TPA Details</div>
-    <p class="section-desc">Enter shift summary data and TPA/FMER details below. All fields support paste from external sources.</p>
+    <p class="section-desc">Enter shift summary data and TPA/FMER details below. Copy from Excel/Sheets and paste — data fills across all cells automatically!</p>
 
     <div class="sub-title">Table 1: Shift Summary</div>
     <div class="spreadsheet-wrapper">
@@ -291,7 +296,7 @@ body{background:var(--bg);font-family:system-ui,-apple-system,sans-serif;margin:
       <button class="btn-secondary" onclick="addRows('rsrTableBody',5,createRSRRow)">➕ Add More Rows</button>
       <button class="btn-clear" onclick="clearTable('rsrTableBody',5,createRSRRow)">🗑️ Clear All</button>
     </div>
-    <p class="helper-text">💡 Paste data directly from your spreadsheet into the table fields.</p>
+    <p class="helper-text">💡 Paste multiple rows from Excel — data auto-distributes across all columns!</p>
   </div>
 
   <div id="rsrEosView" class="eos-view">
@@ -317,7 +322,7 @@ body{background:var(--bg);font-family:system-ui,-apple-system,sans-serif;margin:
         <button class="btn-copy" id="rsrCopyBtn" onclick="copyContent('rsrCopyableContent','rsrCopyBtn')">📋 Copy to Clipboard</button>
         <button class="btn-outlook" onclick="sendRSROutlook()">📧 Send via Outlook</button>
       </div>
-      <p class="copy-hint">💡 "Copy to Clipboard" copies the full RSR report. "Send via Outlook" copies HTML & opens Outlook with pre-filled To & Subject.</p>
+      <p class="copy-hint">💡 "Copy to Clipboard" copies the full RSR report. "Send via Outlook" copies HTML & opens Outlook.</p>
     </div>
   </div>
 </div>
@@ -381,6 +386,83 @@ function getTodayDate() {
   const d = new Date();
   return (d.getMonth()+1)+'/'+d.getDate()+'/'+d.getFullYear();
 }
+
+// ========== MULTI-CELL PASTE HANDLER ==========
+function handlePaste(e) {
+  const target = e.target;
+  if (!target.matches('input, textarea')) return;
+  
+  const clipboardData = e.clipboardData || window.clipboardData;
+  const pastedText = clipboardData.getData('text');
+  
+  // Check if pasted data contains tabs or newlines (multi-cell data from Excel/Sheets)
+  if (!pastedText.includes('\t') && !pastedText.includes('\n')) return;
+  
+  e.preventDefault();
+  
+  // Parse the pasted data into rows and columns
+  const rows = pastedText.split('\n').filter(row => row.trim() !== '');
+  const parsedData = rows.map(row => row.split('\t'));
+  
+  // Find the target cell position
+  const td = target.closest('td');
+  const tr = td.closest('tr');
+  const tbody = tr.closest('tbody');
+  const table = tbody.closest('table');
+  
+  // Get all rows in the tbody
+  const allRows = Array.from(tbody.querySelectorAll('tr'));
+  const startRowIndex = allRows.indexOf(tr);
+  
+  // Get all cells in the current row to find column index
+  const allCells = Array.from(tr.querySelectorAll('td'));
+  const startColIndex = allCells.indexOf(td);
+  
+  // Get total columns in the table
+  const totalCols = allCells.length;
+  
+  // Determine if we need more rows
+  const rowsNeeded = startRowIndex + parsedData.length;
+  while (allRows.length < rowsNeeded) {
+    // Add more rows if needed
+    const rowFn = table.id === 'rsrDetailTable' ? createRSRRow : createFlightRow;
+    tbody.insertAdjacentHTML('beforeend', rowFn());
+    allRows.push(tbody.lastElementChild);
+  }
+  
+  // Fill in the data
+  parsedData.forEach((rowData, rowOffset) => {
+    const currentRow = allRows[startRowIndex + rowOffset];
+    if (!currentRow) return;
+    
+    const cells = currentRow.querySelectorAll('td');
+    rowData.forEach((cellValue, colOffset) => {
+      const targetColIndex = startColIndex + colOffset;
+      if (targetColIndex >= cells.length) return;
+      
+      const input = cells[targetColIndex].querySelector('input, textarea');
+      if (input) {
+        input.value = cellValue.trim();
+        // Trigger input event for any listeners
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+    });
+  });
+  
+  // Show toast notification
+  showPasteToast(parsedData.length, parsedData[0] ? parsedData[0].length : 0);
+}
+
+function showPasteToast(rows, cols) {
+  const toast = document.getElementById('pasteToast');
+  toast.textContent = `✅ Pasted ${rows} row${rows>1?'s':''} × ${cols} column${cols>1?'s':''} successfully!`;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+// Attach paste handler to document (event delegation)
+document.addEventListener('paste', handlePaste);
+// ========== END PASTE HANDLER ==========
 
 function init() {
   const select = document.getElementById('gatewaySelect');
@@ -460,7 +542,6 @@ function getRSRDetail() {
   return data;
 }
 
-// SEND FLIGHT EOS
 function sendEOS() {
   const data = getFlightData();
   if (!data.length) { alert('Please enter at least one flight record.'); return; }
@@ -475,7 +556,6 @@ function sendEOS() {
   }, 1800);
 }
 
-// SEND RSR EOS
 function sendRSR() {
   const detail = getRSRDetail();
   const summary = getRSRSummary();
@@ -497,7 +577,6 @@ function sendRSR() {
   }, 1800);
 }
 
-// COPY
 function copyContent(blockId, btnId) {
   const content = document.getElementById(blockId);
   const range = document.createRange();
@@ -513,7 +592,6 @@ function copyContent(blockId, btnId) {
   sel.removeAllRanges();
 }
 
-// OUTLOOK - FLIGHT
 function sendFlightOutlook() {
   const data = getFlightData();
   let html = `<html><body style="font-family:Calibri,Arial,sans-serif;font-size:14px;color:#333;">
@@ -532,7 +610,6 @@ function sendFlightOutlook() {
   copyHtmlAndOpenMailto(html, 'EOS Flight Delay Report', DEFAULT_FLIGHT_TO);
 }
 
-// OUTLOOK - RSR
 function sendRSROutlook() {
   const summary = getRSRSummary();
   const detail = getRSRDetail();
@@ -563,7 +640,6 @@ function sendRSROutlook() {
   copyHtmlAndOpenMailto(html, subject, RSR_TO);
 }
 
-// HELPER
 function copyHtmlAndOpenMailto(htmlBody, subject, to) {
   const blob = new Blob([htmlBody], {type:'text/html'});
   const item = new ClipboardItem({'text/html': blob});
