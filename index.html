@@ -1,4 +1,3 @@
-```python
 ```html
 <!DOCTYPE html>
 <html>
@@ -259,7 +258,7 @@ body{background:var(--bg);font-family:system-ui,-apple-system,sans-serif;margin:
         <button class="btn-copy" id="copyBtn" onclick="copyReport()">📋 Copy to Clipboard</button>
         <button class="btn-outlook" onclick="sendToOutlook()">📧 Send via Outlook</button>
       </div>
-      <p class="copy-hint">💡 "Copy to Clipboard" copies the entire report. "Send via Outlook" opens your email client with a full HTML table.</p>
+      <p class="copy-hint">💡 "Copy to Clipboard" copies the entire report. "Send via Outlook" opens Outlook with the HTML table copied — just paste (Ctrl+V) in the email body.</p>
     </div>
   </div>
 </div>
@@ -313,6 +312,9 @@ const gatewayData = {
   "KTPA": "tpamgt@abxair.com; tpa-admin@abxair.com; ktpa-amazon-air-alert@amazon.com; Hoss.Marting@lgstx.com",
   "PHNL": "amazonops@pacificaircargo.com"
 };
+
+// Default "To" recipients for Outlook
+const DEFAULT_TO_EMAILS = 'roc-airdelay@amazon.com;hyd-airdelay@amazon.com';
 
 const PRIORITY_QUEUE_URL = 'https://paragon-na.amazon.com/hz/dox-search?searchQuery=(queue:%22toc-na-priority-loads@amazon.com%22)%20AND%20(-status:%22RESOLVED%22)&contentType=CASE&pageSize=75&sortField=lastOutboundDate&sortOrder=asc';
 const AIR_SHUTTLE_URL = 'https://paragon-na.amazon.com/hz/dox-search?searchQuery=(%22OutboundAirShuttle%22%20OR%20%22OutboundFresh%22%20OR%20%22TransfersFresh%22)%20AND%20-status:%22Resolved%22%20AND%20(queue:%22roc-trailer-team@amazon.com%22%20OR%20queue:%22noc-na-ib-swa@amazon.com%22%20OR%20queue:%22toc-na-support@amazon.com%22%20OR%20queue:%22azng-na-escalations@amazon.com%22%20OR%20queue:%22roc-na-3p-trailer-issues@amazon.com%22)%20AND%20creationDate:[%201590476400000%20TO%20*%20]&contentType=CASE&pageSize=75&sortField=creationDate&sortOrder=desc';
@@ -439,11 +441,9 @@ function copyReport() {
 }
 
 function sendToOutlook() {
-  const gateway = document.getElementById('gatewaySelect').value;
-  const emails = gateway ? gatewayData[gateway].split(';').map(e => e.trim()).join(';') : '';
   const data = getTableData();
 
-  // Build HTML email body with proper table borders
+  // Build HTML email body with full bordered table
   let htmlBody = `
 <html><body style="font-family:Calibri,Arial,sans-serif;font-size:14px;color:#333;">
 <p><b>Hello Team,</b></p>
@@ -491,18 +491,17 @@ function sendToOutlook() {
   const clipboardItem = new ClipboardItem({ 'text/html': blob });
 
   navigator.clipboard.write([clipboardItem]).then(() => {
-    // Open mailto with recipients and subject
-    const subject = encodeURIComponent('EOS Flight Delay Report - ' + (gateway || 'All Gateways'));
-    const mailto = `mailto:${emails}?subject=${subject}`;
+    // Open mailto with DEFAULT recipients (roc-airdelay & hyd-airdelay)
+    const subject = encodeURIComponent('EOS Flight Delay Report');
+    const mailto = `mailto:${DEFAULT_TO_EMAILS}?subject=${subject}`;
     window.location.href = mailto;
 
-    // Show confirmation
     const btn = document.querySelector('.btn-outlook');
     btn.innerHTML = '✅ HTML Copied & Outlook Opened!';
     setTimeout(() => { btn.innerHTML = '📧 Send via Outlook'; }, 3000);
   }).catch(() => {
-    // Fallback: open mailto with plain text body
-    const subject = encodeURIComponent('EOS Flight Delay Report - ' + (gateway || 'All Gateways'));
+    // Fallback: open mailto with plain text
+    const subject = encodeURIComponent('EOS Flight Delay Report');
     let body = 'Hello Team,%0D%0A%0D%0A';
     body += 'Please find below EOS Flight Delay Report for Shift - #_ :%0D%0A%0D%0A';
     body += 'Priority Queue Link (EOS Backlog): Link%0D%0A';
@@ -514,7 +513,7 @@ function sendToOutlook() {
       body += `${d.flight} | ${d.vrid} | ${d.lane} | ${d.delay} | ${d.impacted} | ${d.caseNum} | ${d.rescheduled} | ${d.status}%0D%0A`;
     });
     body += '%0D%0AThank you,%0D%0AEOS Flight Team';
-    window.location.href = `mailto:${emails}?subject=${subject}&body=${body}`;
+    window.location.href = `mailto:${DEFAULT_TO_EMAILS}?subject=${subject}&body=${body}`;
   });
 }
 
